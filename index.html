@@ -80,6 +80,8 @@
         .watermark { position: absolute; bottom: -20px; right: -20px; font-size: 8rem; color: rgba(0,0,0,0.03); z-index: 0; pointer-events: none; }
         .content-z { position: relative; z-index: 10; }
         .btn-filter-q.active { background-color: #3b82f6; color: white; border-color: #3b82f6; }
+        
+        .star-btn { z-index: 20; position: relative; }
 
         /* Navbar switch UI */
         .nav-switch-btn { transition: all 0.3s ease; }
@@ -159,6 +161,7 @@
 
                 <div class="mt-6 flex flex-wrap gap-2 justify-center" id="filters-container-q">
                     <button onclick="filterCards('Všetky')" class="btn-filter-q active px-4 py-1.5 rounded-full border border-gray-300 text-sm font-medium transition-colors hover:bg-gray-100 text-gray-700">Všetky</button>
+                    <button onclick="filterCards('Na precvičenie')" class="btn-filter-q px-4 py-1.5 rounded-full border border-yellow-300 bg-yellow-50 text-sm font-medium transition-colors hover:bg-yellow-100 text-yellow-800"><i class="fa-solid fa-star text-yellow-500 mr-1"></i> Na precvičenie</button>
                     <button onclick="filterCards('Základy')" class="btn-filter-q px-4 py-1.5 rounded-full border border-gray-300 text-sm font-medium transition-colors hover:bg-gray-100 text-gray-700"><i class="fa-solid fa-book text-blue-500 mr-1"></i> Základy</button>
                     <button onclick="filterCards('Fázy a Životný cyklus')" class="btn-filter-q px-4 py-1.5 rounded-full border border-gray-300 text-sm font-medium transition-colors hover:bg-gray-100 text-gray-700"><i class="fa-solid fa-rotate text-orange-500 mr-1"></i> Životný cyklus</button>
                     <button onclick="filterCards('Metodiky a Štandardy')" class="btn-filter-q px-4 py-1.5 rounded-full border border-gray-300 text-sm font-medium transition-colors hover:bg-gray-100 text-gray-700"><i class="fa-solid fa-scale-balanced text-purple-500 mr-1"></i> Metodiky</button>
@@ -828,14 +831,29 @@
         let qFilter = 'Všetky';
         let flipped = new Set();
         let displayQ = [...dbOtazky];
+        let starredCards = new Set(JSON.parse(localStorage.getItem('smartIsStarred') || '[]'));
 
         function renderOtazkyGrid() {
             const grid = document.getElementById('cards-grid');
             grid.innerHTML = '';
-            const filtered = qFilter === 'Všetky' ? displayQ : displayQ.filter(i => i.cat === qFilter);
+            
+            let filtered = displayQ;
+            if (qFilter === 'Na precvičenie') {
+                filtered = displayQ.filter(i => starredCards.has(i.id));
+            } else if (qFilter !== 'Všetky') {
+                filtered = displayQ.filter(i => i.cat === qFilter);
+            }
+
+            if (filtered.length === 0 && qFilter === 'Na precvičenie') {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-gray-500 font-medium flex flex-col items-center"><i class="fa-solid fa-star text-4xl mb-3 text-gray-300"></i><p>Zatiaľ nemáš vybrané žiadne otázky na precvičenie.</p></div>`;
+                updateProgress(filtered.length);
+                return;
+            }
             
             filtered.forEach(data => {
                 const isFlipped = flipped.has(data.id) ? 'flipped' : '';
+                const isStarredClass = starredCards.has(data.id) ? 'fa-solid fa-star text-yellow-500' : 'fa-regular fa-star text-gray-300 hover:text-yellow-400';
+                
                 grid.innerHTML += `
                 <div class="flashcard-container" onclick="handleFlip(${data.id}, this)">
                     <div class="flashcard ${isFlipped}">
@@ -845,7 +863,12 @@
                                 <div>
                                     <div class="flex justify-between items-start mb-4">
                                         <span class="text-xs font-bold px-2 py-1 rounded text-white" style="background-color: ${data.color}">${data.cat}</span>
-                                        <span class="text-sm font-bold text-gray-400 border border-gray-200 px-2 py-1 rounded-full">#${data.id}</span>
+                                        <div class="flex items-center gap-2 relative z-20">
+                                            <button onclick="toggleStar(${data.id}, event)" class="star-btn focus:outline-none transition-transform hover:scale-110" title="Pridať na precvičenie">
+                                                <i class="${isStarredClass} text-lg"></i>
+                                            </button>
+                                            <span class="text-sm font-bold text-gray-400 border border-gray-200 px-2 py-1 rounded-full">#${data.id}</span>
+                                        </div>
                                     </div>
                                     <h3 class="text-lg font-bold text-gray-800 leading-snug">${data.q}</h3>
                                 </div>
@@ -855,36 +878,78 @@
                         <div class="flashcard-back">
                             <i class="${data.icon} watermark"></i>
                             <div class="content-z flex flex-col h-full">
-                                <div class="text-xs text-gray-400 font-bold mb-3 pb-2 border-b border-gray-100 flex justify-between"><span>Odpoveď</span><span>#${data.id}</span></div>
+                                <div class="text-xs text-gray-400 font-bold mb-3 pb-2 border-b border-gray-100 flex justify-between items-center">
+                                    <span>Odpoveď</span>
+                                    <div class="flex items-center gap-2 relative z-20">
+                                        <button onclick="toggleStar(${data.id}, event)" class="star-btn focus:outline-none transition-transform hover:scale-110" title="Pridať na precvičenie">
+                                            <i class="${isStarredClass} text-lg"></i>
+                                        </button>
+                                        <span>#${data.id}</span>
+                                    </div>
+                                </div>
                                 <div class="text-gray-700 leading-relaxed text-[15px] flex-grow">${data.a}</div>
                             </div>
                         </div>
                     </div>
                 </div>`;
             });
-            updateProgress();
+            updateProgress(filtered.length);
+        }
+
+        function toggleStar(id, event) {
+            event.stopPropagation(); // Zabráni preklopeniu karty pri kliknutí na hviezdičku
+            if (starredCards.has(id)) {
+                starredCards.delete(id);
+            } else {
+                starredCards.add(id);
+            }
+            localStorage.setItem('smartIsStarred', JSON.stringify([...starredCards]));
+            renderOtazkyGrid();
         }
 
         function handleFlip(id, el) {
             const card = el.querySelector('.flashcard');
             card.classList.toggle('flipped');
-            if (card.classList.contains('flipped')) flipped.add(id);
-            updateProgress();
+            if (card.classList.contains('flipped')) {
+                flipped.add(id);
+            } else {
+                flipped.delete(id); // Aby sa progres správne aktualizoval pri otočení späť
+            }
+            // Zistíme len aktuálny počet na obrazovke pre progress bar
+            const currentFilterCount = qFilter === 'Na precvičenie' ? starredCards.size : (qFilter === 'Všetky' ? dbOtazky.length : displayQ.filter(i => i.cat === qFilter).length);
+            updateProgress(currentFilterCount);
         }
 
-        function updateProgress() {
-            const t = dbOtazky.length;
-            const c = flipped.size;
-            const p = Math.round((c/t)*100);
+        function updateProgress(totalCurrentFilter = dbOtazky.length) {
+            // Rátame len tie karty, ktoré sú momentálne na obrazovke zobrazené a sú otočené
+            let flippedInView = 0;
+            const currentCardsIds = Array.from(document.querySelectorAll('.flashcard-container .text-sm.text-gray-400.border')).map(el => parseInt(el.innerText.replace('#', '')));
+            
+            flipped.forEach(id => {
+                if (currentCardsIds.includes(id)) flippedInView++;
+            });
+
+            const t = totalCurrentFilter;
+            const p = t === 0 ? 0 : Math.round((flippedInView/t)*100);
+            
             document.getElementById('progress-bar').style.width = `${p}%`;
-            document.getElementById('progress-text').innerText = `${c} / ${t} (${p}%)`;
+            document.getElementById('progress-text').innerText = `${flippedInView} / ${t} (${p}%)`;
         }
 
         function filterCards(cat) {
             qFilter = cat;
+            flipped.clear(); // Pri zmene filtra vyresetujeme zobrazený progress
             document.querySelectorAll('.btn-filter-q').forEach(b => {
-                b.classList.remove('active', 'bg-blue-600', 'text-white');
-                if(b.innerText.includes(cat) || (cat==='Všetky' && b.innerText.trim()==='Všetky')) b.classList.add('active');
+                b.classList.remove('active', 'bg-blue-600', 'text-white', 'bg-yellow-50', 'text-yellow-800', 'border-yellow-300');
+                b.classList.add('hover:bg-gray-100', 'text-gray-700', 'border-gray-300');
+                
+                if(b.innerText.includes(cat) || (cat==='Všetky' && b.innerText.trim()==='Všetky')) {
+                    b.classList.add('active');
+                    if (cat === 'Na precvičenie') {
+                        b.classList.remove('hover:bg-gray-100', 'text-gray-700', 'border-gray-300');
+                        b.classList.add('bg-yellow-50', 'text-yellow-800', 'border-yellow-300');
+                    }
+                }
             });
             renderOtazkyGrid();
         }
