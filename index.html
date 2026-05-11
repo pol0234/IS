@@ -75,8 +75,39 @@
         .flashcard-container { perspective: 1000px; cursor: pointer; min-height: 280px; }
         .flashcard { position: relative; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
         .flashcard.flipped { transform: rotateY(180deg); }
-        .flashcard-front, .flashcard-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 1rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); display: flex; flex-direction: column; padding: 1.5rem; background-color: white; border-top: 6px solid #3b82f6; }
-        .flashcard-back { transform: rotateY(180deg); border-top-color: #10b981; overflow-y: auto; }
+        
+        /* FIX PRE iOS SAFARI */
+        .flashcard-front, .flashcard-back { 
+            position: absolute; 
+            top: 0; 
+            left: 0;
+            width: 100%; 
+            height: 100%; 
+            -webkit-backface-visibility: hidden; 
+            backface-visibility: hidden; 
+            -webkit-transform: translate3d(0,0,0); /* Vynútenie hardvérovej akcelerácie */
+            border-radius: 1rem; 
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); 
+            display: flex; 
+            flex-direction: column; 
+            padding: 1.5rem; 
+            background-color: white; 
+            border-top: 6px solid #3b82f6; 
+        }
+        
+        .flashcard-front { 
+            z-index: 2; 
+            transform: rotateY(0deg); /* Explicitná rotácia pre iOS */
+        }
+        
+        .flashcard-back { 
+            transform: rotateY(180deg); 
+            border-top-color: #10b981; 
+            overflow-y: auto; 
+            overflow-x: hidden;
+            z-index: 1; 
+        }
+
         .watermark { position: absolute; bottom: -20px; right: -20px; font-size: 8rem; color: rgba(0,0,0,0.03); z-index: 0; pointer-events: none; }
         .content-z { position: relative; z-index: 10; }
         .btn-filter-q.active { background-color: #3b82f6; color: white; border-color: #3b82f6; }
@@ -558,7 +589,7 @@
             },
             {
                 id: "rea", category: "tools", categoryName: "Modelovanie", title: "REA", icon: "fa-coins", color: "pink", structureType: "composition",
-                what: "Pokročilý databázový ontologický model. Odmieta tradičné abstraktné účtovníctvo (koncept 'Má dať/Dal') a prepisuje ukladanie dát so zameraním na reálne, fyzické hospodárske operácie.",
+                what: "Pokročil databázový ontologický model. Odmieta tradičné abstraktné účtovníctvo (koncept 'Má dať/Dal') a prepisuje ukladanie dát so zameraním na reálne, fyzické hospodárske operácie.",
                 when: "Kľúčové pri tvorbe architektúry pre <b>masívne podnikové databázy, účtovné platformy a systémy ERP</b> (Enterprise Resource Planning).",
                 pros: "• Úplne odstraňuje dátovú duplicitu klasických účtovných denníkov. Udržuje len jeden čistý faktický repozitár ('Čo a kde kedy odišlo').<br>• IT systém dokáže vygenerovať akýkoľvek report na kliknutie.",
                 cons: "• Vyžaduje masívnu premenu myslenia od klasických účtovníkov, čo pri implementácii vo firmách naráža na obrovský odpor.",
