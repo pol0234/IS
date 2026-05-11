@@ -106,6 +106,8 @@
             overflow-y: auto; 
             overflow-x: hidden;
             z-index: 1; 
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
         }
 
         .watermark { position: absolute; bottom: -20px; right: -20px; font-size: 8rem; color: rgba(0,0,0,0.03); z-index: 0; pointer-events: none; }
@@ -908,7 +910,7 @@
                         </div>
                         <div class="flashcard-back">
                             <i class="${data.icon} watermark"></i>
-                            <div class="content-z flex flex-col h-full">
+                            <div class="content-z flex flex-col min-h-full">
                                 <div class="text-xs text-gray-400 font-bold mb-3 pb-2 border-b border-gray-100 flex justify-between items-center">
                                     <span>Odpoveď</span>
                                     <div class="flex items-center gap-2 relative z-20">
