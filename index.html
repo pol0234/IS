@@ -1,9 +1,10 @@
+<!-- VERSION: 2.0 - HIGH-END FLASHCARDS DESIGN -->
 <!DOCTYPE html>
 <html lang="sk" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projektové Riadenie - Smart IS</title>
+    <title>Projektové Riadenie - Smart IS (V2)</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -28,12 +29,7 @@
 
     <style>
         /* Dynamické témy pozadia */
-        body { 
-            transition: background 0.4s ease, color 0.4s ease; 
-            min-height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-        }
+        body { transition: background 0.4s ease, color 0.4s ease; min-height: 100vh; display: flex; flex-direction: column; }
         
         .theme-dark {
             background-color: #0f172a;
@@ -52,17 +48,9 @@
         }
 
         /* --- ŠTÝLY PRE METODIKY --- */
-        .glass { 
-            background: rgba(30, 41, 59, 0.7); 
-            backdrop-filter: blur(12px); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-        }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
         .card-hover { transition: all 0.3s ease; }
-        .card-hover:hover { 
-            transform: translateY(-5px); 
-            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4); 
-            border-color: rgba(59, 130, 246, 0.5); 
-        }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4); border-color: rgba(59, 130, 246, 0.5); }
         
         .modal-enter { animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         @keyframes modalFadeIn {
@@ -70,12 +58,7 @@
             to { opacity: 1; transform: scale(1) translateY(0); }
         }
         
-        .filter-btn.active { 
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6); 
-            color: white; 
-            border-color: transparent; 
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); 
-        }
+        .filter-btn.active { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; border-color: transparent; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); }
 
         /* Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
@@ -83,74 +66,82 @@
         ::-webkit-scrollbar-thumb { background: #64748b; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-        /* --- ŠTÝLY PRE OTÁZKY A FLASHCARDS --- */
+        /* --- ŠTÝLY PRE OTÁZKY --- */
         .hl-blue { background-color: #dbeafe; color: #1e3a8a; font-weight: 700; padding: 2px 6px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .hl-red { background-color: #fee2e2; color: #991b1b; font-weight: 700; padding: 2px 6px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .hl-green { background-color: #dcfce7; color: #166534; font-weight: 700; padding: 2px 6px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .hl-purple { background-color: #f3e8ff; color: #6b21a8; font-weight: 700; padding: 2px 6px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .hl-orange { background-color: #ffedd5; color: #9a3412; font-weight: 700; padding: 2px 6px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
 
-        /* Kľúčová oprava scrollovania na mobile - kontajner drží fixnú výšku */
-        .flashcard-container { 
-            perspective: 1000px; 
-            cursor: pointer; 
-            height: 350px; 
-            width: 100%; 
-        }
-        
-        .flashcard { 
-            position: relative; 
-            width: 100%; 
-            height: 100%; 
-            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); 
-            transform-style: preserve-3d; 
-        }
-        
+        .flashcard-container { perspective: 1000px; cursor: pointer; min-height: 320px; }
+        .flashcard { position: relative; width: 100%; height: 100%; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
         .flashcard.flipped { transform: rotateY(180deg); }
         
-        /* Obaly kariet pre 3D efekt - Pevné rozmery a skrytý overflow */
+        /* FIX PRE iOS SAFARI */
         .flashcard-front, .flashcard-back { 
             position: absolute; 
-            top: 0; left: 0; 
-            width: 100%; height: 100%; 
+            top: 0; 
+            left: 0;
+            width: 100%; 
+            height: 100%; 
             -webkit-backface-visibility: hidden; 
             backface-visibility: hidden; 
-            -webkit-transform: translate3d(0,0,0);
             border-radius: 1rem; 
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); 
             background-color: white; 
-            border-top: 6px solid #3b82f6;
-            padding: 0; /* Padding je presunutý do card-scroll-area */
-            overflow: hidden; /* Zabráni odrezávaniu a chybám na iOS */
+            border-top: 6px solid #3b82f6; 
         }
         
-        .flashcard-front { z-index: 2; transform: rotateY(0deg); }
-        .flashcard-back { transform: rotateY(180deg); border-top-color: #10b981; z-index: 1; }
-
-        /* VNÚTORNÁ SCROLLOVATEĽNÁ OBLASŤ (Zabezpečí funkčnosť na mobile) */
-        .card-scroll-area {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            padding: 1.5rem;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-            overscroll-behavior: contain; /* Zabráni scrollu celej stránky pri dosiahnutí konca karty */
-            z-index: 10;
+        .flashcard-front { 
+            z-index: 2; 
+            transform: rotateY(0deg);
+            display: flex; 
+            flex-direction: column; 
+            padding: 1.5rem; 
+        }
+        
+        .flashcard-back { 
+            transform: rotateY(180deg); 
+            border-top-color: #10b981; 
+            z-index: 1; 
         }
 
-        /* Decentný scrollbar iba pre vnútro flashcardu */
-        .card-scroll-area::-webkit-scrollbar { width: 4px; }
-        .card-scroll-area::-webkit-scrollbar-track { background: transparent; margin: 10px 0; }
-        .card-scroll-area::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .card-scroll-area::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .scroll-container {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            touch-action: pan-y;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
 
-        .watermark { position: absolute; bottom: -10px; right: -10px; font-size: 8rem; color: rgba(0,0,0,0.03); z-index: 0; pointer-events: none; }
+        /* Prevencia prekrývania touch eventov na mobiloch */
+        .flashcard.flipped .flashcard-front {
+            pointer-events: none;
+        }
+        .flashcard:not(.flipped) .flashcard-back {
+            pointer-events: none;
+        }
+
+        .watermark { position: absolute; bottom: -20px; right: -20px; font-size: 8rem; color: rgba(0,0,0,0.03); z-index: 0; pointer-events: none; }
+        .content-z { position: relative; z-index: 10; }
         .btn-filter-q.active { background-color: #3b82f6; color: white; border-color: #3b82f6; }
+        
         .star-btn { z-index: 20; position: relative; }
 
         /* Navbar switch UI */
         .nav-switch-btn { transition: all 0.3s ease; }
         .nav-switch-btn.active { background-color: #3b82f6; color: white; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
+
+        /* V2 - Bullet points logic */
+        .pros-item { display: flex; align-items: start; gap: 8px; margin-bottom: 8px; }
+        .pros-item i { color: #10b981; margin-top: 3px; font-size: 0.85rem; }
+        .cons-item { display: flex; align-items: start; gap: 8px; margin-bottom: 8px; }
+        .cons-item i { color: #f43f5e; margin-top: 3px; font-size: 0.85rem; }
     </style>
 </head>
 <body class="antialiased theme-dark" id="main-body">
@@ -172,7 +163,6 @@
         </div>
     </nav>
 
-    <!-- ZOBRAZENIE METODÍK -->
     <div id="view-metodiky" class="flex-grow flex flex-col w-full">
         <header class="pt-12 pb-8 px-4 text-center">
             <div class="inline-block mb-4 px-4 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-sm font-semibold tracking-wider uppercase">
@@ -200,7 +190,6 @@
         </main>
     </div>
 
-    <!-- ZOBRAZENIE OTÁZOK -->
     <div id="view-otazky" class="hidden flex-grow flex flex-col w-full">
         <header class="bg-white shadow-sm border-b border-gray-200">
             <div class="max-w-7xl mx-auto px-4 py-6">
@@ -229,10 +218,7 @@
                 <div class="mt-6 flex flex-wrap gap-2 justify-center" id="filters-container-q">
                     <button onclick="filterCards('Všetky')" class="btn-filter-q active px-4 py-1.5 rounded-full border border-gray-300 text-sm font-medium transition-colors hover:bg-gray-100 text-gray-700">Všetky</button>
                     <button onclick="filterCards('Na precvičenie')" class="btn-filter-q px-4 py-1.5 rounded-full border border-yellow-300 bg-yellow-50 text-sm font-medium transition-colors hover:bg-yellow-100 text-yellow-800"><i class="fa-solid fa-star text-yellow-500 mr-1"></i> Na precvičenie</button>
-                    
-                    <!-- Správne nastavený filter pre skúškové otázky -->
-                    <button onclick="filterCards('Skúškové 2024')" class="btn-filter-q px-4 py-1.5 rounded-full border border-amber-300 bg-amber-50 text-sm font-medium transition-colors hover:bg-amber-100 text-amber-800 shadow-sm"><i class="fa-solid fa-graduation-cap text-amber-500 mr-1"></i> Skúškové 2024</button>
-                    
+                    <button onclick="filterCards('Skúška')" class="btn-filter-q px-4 py-1.5 rounded-full border border-amber-300 bg-amber-50 text-sm font-medium transition-colors hover:bg-amber-100 text-amber-800 shadow-sm"><i class="fa-solid fa-graduation-cap text-amber-500 mr-1"></i> Skúškové otázky</button>
                     <button onclick="filterCards('Základy')" class="btn-filter-q px-4 py-1.5 rounded-full border border-gray-300 text-sm font-medium transition-colors hover:bg-gray-100 text-gray-700"><i class="fa-solid fa-book text-blue-500 mr-1"></i> Základy</button>
                     <button onclick="filterCards('Fázy a Životný cyklus')" class="btn-filter-q px-4 py-1.5 rounded-full border border-gray-300 text-sm font-medium transition-colors hover:bg-gray-100 text-gray-700"><i class="fa-solid fa-rotate text-orange-500 mr-1"></i> Životný cyklus</button>
                     <button onclick="filterCards('Metodiky a Štandardy')" class="btn-filter-q px-4 py-1.5 rounded-full border border-gray-300 text-sm font-medium transition-colors hover:bg-gray-100 text-gray-700"><i class="fa-solid fa-scale-balanced text-purple-500 mr-1"></i> Metodiky</button>
@@ -252,7 +238,6 @@
         IS Vzdelávacia platforma
     </footer>
 
-    <!-- MODALNÉ OKNO PRE ENCYKLOPÉDIU -->
     <div id="modal-backdrop" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
         <div id="modal" class="glass rounded-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto hidden transform scale-95 transition-all duration-300 border border-slate-600/50 shadow-2xl font-sans">
             <div class="relative p-6 md:p-8">
@@ -270,27 +255,39 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                    <div class="bg-slate-800/40 p-5 rounded-xl border border-slate-700/50 md:col-span-2">
-                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Definícia / Princíp</h3>
-                        <p id="modal-what" class="text-slate-200 leading-relaxed text-sm md:text-base"></p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-blue-500/5 p-5 rounded-2xl border border-blue-500/20 md:col-span-2 relative overflow-hidden group">
+                        <div class="absolute -right-4 -top-4 text-blue-500/10 text-6xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-lightbulb"></i></div>
+                        <h3 class="text-sm font-bold text-blue-400 uppercase tracking-widest mb-3 flex items-center">
+                            <i class="fa-solid fa-circle-info mr-2"></i> Definícia / Princíp
+                        </h3>
+                        <p id="modal-what" class="text-slate-200 leading-relaxed text-sm md:text-base relative z-10"></p>
                     </div>
-                    <div class="bg-slate-800/40 p-5 rounded-xl border border-slate-700/50">
-                        <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2">Kedy sa využíva?</h3>
-                        <p id="modal-when" class="text-slate-200 leading-relaxed text-sm"></p>
+                    <div class="bg-amber-500/5 p-5 rounded-2xl border border-amber-500/20 relative overflow-hidden group">
+                        <div class="absolute -right-2 -top-2 text-amber-500/10 text-5xl group-hover:scale-110 transition-transform"><i class="fa-solid fa-calendar-check"></i></div>
+                        <h3 class="text-sm font-bold text-amber-400 uppercase tracking-widest mb-3 flex items-center">
+                            <i class="fa-solid fa-clock-rotate-left mr-2"></i> Kedy sa využíva?
+                        </h3>
+                        <p id="modal-when" class="text-slate-200 leading-relaxed text-sm relative z-10"></p>
                     </div>
                 </div>
 
                 <div id="modal-phases-container" class="mb-8"></div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                    <div class="bg-emerald-900/10 p-5 rounded-xl border border-emerald-500/20">
-                        <h3 class="text-sm font-bold text-emerald-400 uppercase tracking-wider mb-3 flex items-center"><i class="fa-solid fa-plus-circle mr-2"></i> Výhody</h3>
-                        <div id="modal-pros" class="text-slate-300 text-sm leading-relaxed"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-emerald-500/5 p-6 rounded-2xl border border-emerald-500/20 shadow-sm relative overflow-hidden group">
+                        <div class="absolute -right-2 -bottom-2 text-emerald-500/10 text-6xl group-hover:rotate-12 transition-transform"><i class="fa-solid fa-circle-check"></i></div>
+                        <h3 class="text-sm font-bold text-emerald-400 uppercase tracking-widest mb-4 flex items-center">
+                            <i class="fa-solid fa-plus-circle mr-2"></i> Hlavné Výhody
+                        </h3>
+                        <div id="modal-pros" class="text-slate-300 text-sm leading-relaxed space-y-2 relative z-10"></div>
                     </div>
-                    <div class="bg-red-900/10 p-5 rounded-xl border border-red-500/20">
-                        <h3 class="text-sm font-bold text-red-400 uppercase tracking-wider mb-3 flex items-center"><i class="fa-solid fa-minus-circle mr-2"></i> Nevýhody</h3>
-                        <div id="modal-cons" class="text-slate-300 text-sm leading-relaxed"></div>
+                    <div class="bg-rose-500/5 p-6 rounded-2xl border border-rose-500/20 shadow-sm relative overflow-hidden group">
+                        <div class="absolute -right-2 -bottom-2 text-rose-500/10 text-6xl group-hover:-rotate-12 transition-transform"><i class="fa-solid fa-circle-xmark"></i></div>
+                        <h3 class="text-sm font-bold text-rose-400 uppercase tracking-widest mb-4 flex items-center">
+                            <i class="fa-solid fa-minus-circle mr-2"></i> Nevýhody a Riziká
+                        </h3>
+                        <div id="modal-cons" class="text-slate-300 text-sm leading-relaxed space-y-2 relative z-10"></div>
                     </div>
                 </div>
 
@@ -306,7 +303,6 @@
         </div>
     </div>
 
-    <!-- JEDINÝ A HLAVNÝ JAVASCRIPT BLOK -->
     <script>
         /* TABS PREPÍNANIE */
         function switchTab(tab) {
@@ -334,470 +330,326 @@
         /* --- DÁTA METODÍK --- */
         const dbMetodiky = [
             {
-                id: "waterfall", 
-                category: "sdlc", 
-                categoryName: "Metodika Vývoja", 
-                title: "Waterfall (Vodopádový model)", 
-                icon: "fa-water", 
-                color: "blue", 
-                structureType: "sequence", 
-                what: "Tradičný, sekvenčný prístup k vývoju softvéru. Práca postupuje výhradne jednosmerne (zhora nadol). Ďalšia fáza môže začať až po úplnom dokončení a formálnom schválení (sign-off) tej predošlej.", 
-                when: "Projekty s <b>100% jasnými a nemennými požiadavkami</b>. Často sa vyžaduje v regulovaných odvetviach (zdravotníctvo, letectvo, armáda), kde je dôsledná dokumentácia dôležitejšia ako flexibilita.", 
-                pros: "• Jasná štruktúra a predvídateľný rozpočet.<br>• Dokonalá technická dokumentácia.<br>• Programátor presne vie, čo má robiť.", 
-                cons: "• Obrovská nepružnosť voči zmenám.<br>• Zákazník vidí produkt až na konci projektu.<br>• Chyby v zadaní zistené v testovaní sú extrémne drahé na opravu.", 
+                id: "waterfall", category: "sdlc", categoryName: "Metodika Vývoja", title: "Waterfall (Vodopádový model)", icon: "fa-water", color: "blue", structureType: "sequence",
+                what: "Tradičný, sekvenčný prístup k vývoju softvéru. Práca postupuje výhradne jednosmerne (zhora nadol). Ďalšia fáza môže začať až po úplnom dokončení a formálnom schválení (sign-off) tej predošlej.",
+                when: "Projekty s <b>100% jasnými a nemennými požiadavkami</b>. Často sa vyžaduje v regulovaných odvetviach (zdravotníctvo, letectvo, armáda), kde je dôsledná dokumentácia dôležitejšia ako flexibilita.",
+                pros: "• Jasná štruktúra a predvídateľný rozpočet.<br>• Dokonalá technická dokumentácia.<br>• Programátor presne vie, čo má robiť.",
+                cons: "• Obrovská nepružnosť voči zmenám.<br>• Zákazník vidí produkt až na konci projektu.<br>• Chyby v zadaní zistené v testovaní sú extrémne drahé na opravu.",
                 steps: [
-                    { title: "Analýza", desc: "Zber požiadaviek a tvorba rozsiahlej špecifikačnej dokumentácie." }, 
-                    { title: "Návrh", desc: "Dizajn softvérovej architektúry a databáz." }, 
-                    { title: "Implementácia", desc: "Samotné programovanie a písanie kódu." }, 
-                    { title: "Testovanie", desc: "Overovanie kódu voči analytickému zadaniu." }, 
+                    { title: "Analýza", desc: "Zber požiadaviek a tvorba rozsiahlej špecifikačnej dokumentácie." },
+                    { title: "Návrh", desc: "Dizajn softvérovej architektúry a databáz." },
+                    { title: "Implementácia", desc: "Samotné programovanie a písanie kódu." },
+                    { title: "Testovanie", desc: "Overovanie kódu voči analytickému zadaniu." },
                     { title: "Nasadenie", desc: "Presun do ostrej prevádzky a následná údržba." }
-                ], 
+                ],
                 visualHtml: `<div class='flex flex-col gap-1 w-full min-w-[280px]'><div class='w-32 bg-blue-600 text-white text-center py-2 rounded shadow-lg text-sm font-bold z-50 border border-blue-400'>Analýza</div><div class='w-32 bg-blue-500 text-white text-center py-2 rounded shadow-lg text-sm font-bold z-40 ml-4 md:ml-8 border border-blue-400'>Návrh</div><div class='w-32 bg-blue-400 text-white text-center py-2 rounded shadow-lg text-sm font-bold z-30 ml-8 md:ml-16 border border-blue-300'>Vývoj</div><div class='w-32 bg-blue-300 text-slate-800 text-center py-2 rounded shadow-lg text-sm font-bold z-20 ml-12 md:ml-24 border border-blue-200'>Testovanie</div><div class='w-32 bg-blue-200 text-slate-800 text-center py-2 rounded shadow-lg text-sm font-bold z-10 ml-16 md:ml-32 border border-blue-200'>Nasadenie</div></div>`
             },
             {
-                id: "v-model", 
-                category: "sdlc", 
-                categoryName: "Metodika Vývoja", 
-                title: "V-Model", 
-                icon: "fa-v", 
-                color: "blue", 
-                structureType: "sequence", 
-                what: "Rozšírenie Waterfall modelu (Verification & Validation). Rieši jeho najväčšiu slabinu – odkladanie testov na koniec. Ku každej fáze návrhu sa tu paralelne vopred plánuje príslušná fáza testovania.", 
-                when: "Výhradne pre <b>'Safety-critical' projekty</b>, kde softvérová chyba ohrozuje životy alebo veľký majetok (riadenie lietadiel, ABS brzdy, lekárske prístroje).", 
-                pros: "• Zabezpečuje bezkonkurenčnú kvalitu a spoľahlivosť kódu.<br>• Chyby sa vďaka včasnému plánovaniu testov odhaľujú oveľa skôr.", 
-                cons: "• Rovnako rigidný voči zmenám ako Waterfall.<br>• Tvorba obrovského množstva testovacích scenárov vopred pýta extrémne veľa času.", 
+                id: "v-model", category: "sdlc", categoryName: "Metodika Vývoja", title: "V-Model", icon: "fa-v", color: "blue", structureType: "sequence",
+                what: "Rozšírenie Waterfall modelu (Verification & Validation). Rieši jeho najväčšiu slabinu – odkladanie testov na koniec. Ku každej fáze návrhu sa tu paralelne vopred plánuje príslušná fáza testovania.",
+                when: "Výhradne pre <b>'Safety-critical' projekty</b>, kde softvérová chyba ohrozuje životy alebo veľký majetok (riadenie lietadiel, ABS brzdy, lekárske prístroje).",
+                pros: "• Zabezpečuje bezkonkurenčnú kvalitu a spoľahlivosť kódu.<br>• Chyby sa vďaka včasnému plánovaniu testov odhaľujú oveľa skôr.",
+                cons: "• Rovnako rigidný voči zmenám ako Waterfall.<br>• Tvorba obrovského množstva testovacích scenárov vopred pýta extrémne veľa času.",
                 steps: [
-                    { title: "Verifikácia (Naľavo)", desc: "Dekompozícia systému (Analýza, Návrh architektúry, Návrh modulov)." }, 
-                    { title: "Kódovanie (Spodok)", desc: "Programovanie na základe detailného návrhu." }, 
+                    { title: "Verifikácia (Naľavo)", desc: "Dekompozícia systému (Analýza, Návrh architektúry, Návrh modulov)." },
+                    { title: "Kódovanie (Spodok)", desc: "Programovanie na základe detailného návrhu." },
                     { title: "Validácia (Napravo)", desc: "Postupné testovanie (Jednotkové, Integračné, Systémové, Akceptačné)." }
-                ], 
+                ],
                 visualHtml: `<div class='flex items-end gap-2 text-xs font-bold text-center w-full max-w-lg justify-center'><div class='flex flex-col gap-4 w-28'><div class='bg-indigo-600 p-2 rounded text-white border border-indigo-400'>Požiadavky</div><div class='bg-indigo-500 p-2 rounded text-white border border-indigo-400'>Architektúra</div><div class='bg-indigo-400 p-2 rounded text-white border border-indigo-300'>Návrh</div></div><div class='flex flex-col items-center gap-2'><i class='fa-solid fa-arrow-down-right text-indigo-500 text-xl'></i><div class='bg-purple-500 p-3 rounded-lg text-white w-24 border border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.5)]'>Kódovanie</div><i class='fa-solid fa-arrow-up-right text-emerald-500 text-xl'></i></div><div class='flex flex-col gap-4 w-28'><div class='bg-emerald-600 p-2 rounded text-white border border-emerald-400'>Akceptačné T.</div><div class='bg-emerald-500 p-2 rounded text-white border border-emerald-400'>Systémové T.</div><div class='bg-emerald-400 p-2 rounded text-white border border-emerald-300'>Jednotkové T.</div></div></div>`
             },
             {
-                id: "iterative", 
-                category: "sdlc", 
-                categoryName: "Metodika Vývoja", 
-                title: "Iteratívny model", 
-                icon: "fa-rotate-right", 
-                color: "blue", 
-                structureType: "sequence", 
-                what: "Prístup, pri ktorom sa softvér nedodáva naraz (žiadny Big Bang). Aplikácia sa buduje postupne v opakujúcich sa malých cykloch (iteráciách), čím sa postupne nabaľuje novými funkciami.", 
-                when: "Vhodné pre rozsiahlejšie systémy, kde je hlavný cieľ zrejmý, ale <b>detaily funkcií sa menia</b> na základe spätnej väzby od používateľov.", 
-                pros: "• Rýchlejšie dodanie základnej (hoci osekanej) verzie aplikácie.<br>• Zákazník si môže produkt ohmatať oveľa skôr.<br>• Ľahšie prispôsobenie zmenám.", 
-                cons: "• Ak sa na začiatku zle navrhne jadrová architektúra, postupné 'nabaľovanie' funkcií povedie k neudržateľnému špagetovému kódu.", 
+                id: "iterative", category: "sdlc", categoryName: "Metodika Vývoja", title: "Iteratívny model", icon: "fa-rotate-right", color: "blue", structureType: "sequence",
+                what: "Prístup, pri ktorom sa softvér nedodáva naraz (žiadny Big Bang). Aplikácia sa buduje postupne v opakujúcich sa malých cykloch (iteráciách), čím sa postupne nabaľuje novými funkciami.",
+                when: "Vhodné pre rozsiahlejšie systémy, kde je hlavný cieľ zrejmý, ale <b>detaily funkcií sa menia</b> na základe spätnej väzby od používateľov.",
+                pros: "• Rýchlejšie dodanie základnej (hoci osekanej) verzie aplikácie.<br>• Zákazník si môže produkt ohmatať oveľa skôr.<br>• Ľahšie prispôsobenie zmenám.",
+                cons: "• Ak sa na začiatku zle navrhne jadrová architektúra, postupné 'nabaľovanie' funkcií povedie k neudržateľnému špagetovému kódu.",
                 steps: [
-                    { title: "Základná verzia", desc: "Návrh a kódovanie najdôležitejšej malej funkcie (napr. prihlásenie)." }, 
-                    { title: "Test a odozva", desc: "Zákazník túto časť ohodnotí a pripomienkuje." }, 
+                    { title: "Základná verzia", desc: "Návrh a kódovanie najdôležitejšej malej funkcie (napr. prihlásenie)." },
+                    { title: "Test a odozva", desc: "Zákazník túto časť ohodnotí a pripomienkuje." },
                     { title: "Nová iterácia", desc: "Do systému sa pridá ďalšia funkcia (napr. košík) a cyklus sa opakuje." }
-                ], 
+                ],
                 visualHtml: `<div class='flex items-center gap-4'><div class='w-12 h-12 rounded-full border-2 border-blue-500 flex flex-col items-center justify-center text-[10px] text-blue-400'><i class='fa-solid fa-rotate mb-1'></i> v1.0</div><i class='fa-solid fa-arrow-right text-slate-500'></i><div class='w-20 h-20 rounded-full border-2 border-blue-400 flex flex-col items-center justify-center text-xs text-blue-300'><i class='fa-solid fa-rotate mb-1 text-lg'></i> v2.0</div><i class='fa-solid fa-arrow-right text-slate-500'></i><div class='w-28 h-28 rounded-full border-2 border-blue-300 bg-blue-900/30 flex flex-col items-center justify-center text-sm font-bold text-blue-200 shadow-[0_0_20px_rgba(59,130,246,0.3)]'><i class='fa-solid fa-rotate text-2xl mb-1'></i> Finálny<br>Produkt</div></div>`
             },
             {
-                id: "spiral", 
-                category: "sdlc", 
-                categoryName: "Metodika Vývoja", 
-                title: "Špirálový model", 
-                icon: "fa-hurricane", 
-                color: "blue", 
-                structureType: "sequence", 
-                what: "Kombinácia iteratívneho prístupu s kontrolovaným Waterfallom (autor B. Boehm). Jeho kľúčovým a unikátnym znakom je <b>masívny, opakujúci sa dôraz na analýzu rizík a tvorbu prototypov</b>.", 
-                when: "Využíva sa výhradne pre tie <b>najzložitejšie, najdrahšie a najrizikovejšie projekty</b> (vývoj nových operačných systémov, vesmírny výskum).", 
-                pros: "• Vďaka simuláciám a prototypom prakticky eliminuje fatálne technologické zlyhania na konci vývoja.", 
-                cons: "• Extrémne nákladný a časovo náročný proces.<br>• Vyžaduje úzko špecializovaných expertov na posudzovanie rizík.", 
+                id: "spiral", category: "sdlc", categoryName: "Metodika Vývoja", title: "Špirálový model", icon: "fa-hurricane", color: "blue", structureType: "sequence",
+                what: "Kombinácia iteratívneho prístupu s kontrolovaným Waterfallom (autor B. Boehm). Jeho kľúčovým a unikátnym znakom je <b>masívny, opakujúci sa dôraz na analýzu rizík a tvorbu prototypov</b>.",
+                when: "Využíva sa výhradne pre tie <b>najzložitejšie, najdrahšie a najrizikovejšie projekty</b> (vývoj nových operačných systémov, vesmírny výskum).",
+                pros: "• Prakticky eliminuje fatálne technologické zlyhania vďaka simuláciám.<br>• Poskytuje extrémne vysokú mieru kontroly kvality.",
+                cons: "• Extrémne nákladný a časovo náročný proces.<br>• Vyžaduje úzko špecializovaných expertov na posudzovanie rizík.",
                 steps: [
-                    { title: "Plánovanie", desc: "Zisťovanie cieľov, alternatív a obmedzení cyklu." }, 
-                    { title: "Analýza rizík", desc: "Identifikácia hrozieb a tvorba simulačných prototypov." }, 
-                    { title: "Vývoj a test", desc: "Vytvorenie ďalšej (novšej) verzie systému." }, 
+                    { title: "Plánovanie", desc: "Zisťovanie cieľov, alternatív a obmedzení cyklu." },
+                    { title: "Analýza rizík", desc: "Identifikácia hrozieb a tvorba simulačných prototypov." },
+                    { title: "Vývoj a test", desc: "Vytvorenie ďalšej (novšej) verzie systému." },
                     { title: "Hodnotenie", desc: "Revízia zákazníkom a príprava ďalšej špirály." }
-                ], 
-                visualHtml: `<div class='relative w-48 h-48 border-2 border-slate-600 rounded-full flex items-center justify-center bg-slate-800 overflow-hidden'><div class='absolute inset-0 border-r-2 border-b-2 border-slate-600'></div><div class='absolute top-2 right-4 text-[10px] text-blue-400 font-bold'>Plánovanie</div><div class='absolute bottom-2 right-4 text-[10px] text-emerald-400 font-bold'>Vývoj & Test</div><div class='absolute top-2 left-4 text-[10px] text-red-400 font-bold'>Analýza Rizík</div><div class='absolute bottom-2 left-4 text-[10px] text-purple-400 font-bold'>Hodnotenie</div><i class='fa-solid fa-hurricane text-6xl text-slate-400 z-10'></i></div>`
+                ],
+                visualHtml: `<div class='relative w-64 h-64 border-2 border-slate-600 rounded-full flex items-center justify-center bg-slate-900 overflow-hidden shadow-inner'><div class='absolute inset-0 border-r border-b border-slate-700/50'></div><div class='absolute top-4 right-4 text-[11px] text-blue-400 font-bold bg-blue-400/10 px-2 py-1 rounded border border-blue-400/20 text-center w-28'>1. PLÁNOVANIE</div><div class='absolute bottom-4 right-4 text-[11px] text-emerald-400 font-bold bg-emerald-400/10 px-2 py-1 rounded border border-emerald-400/20 text-center w-28'>3. VÝVOJ & TEST</div><div class='absolute top-4 left-4 text-[11px] text-red-400 font-bold bg-red-400/10 px-2 py-1 rounded border border-red-400/20 text-center w-28'>2. ANALÝZA RIZÍK</div><div class='absolute bottom-4 left-4 text-[11px] text-purple-400 font-bold bg-purple-400/10 px-2 py-1 rounded border border-purple-400/20 text-center w-28'>4. HODNOTENIE</div><i class='fa-solid fa-hurricane text-7xl text-slate-700/80 z-0 opacity-50'></i><div class='absolute w-40 h-40 border-2 border-indigo-500/30 rounded-full animate-[spin_8s_linear_infinite]'></div><div class='absolute w-24 h-24 border-2 border-indigo-400/40 rounded-full animate-[spin_5s_linear_infinite_reverse]'></div></div>`
             },
             {
-                id: "scrum", 
-                category: "sdlc", 
-                categoryName: "Agilný Framework", 
-                title: "Scrum", 
-                icon: "fa-people-carry-box", 
-                color: "emerald", 
-                structureType: "composition", 
-                what: "Najpoužívanejší agilný rámec. Nestanovuje technický postup kódovania, ale proces založený na tímovej samo-organizácii a troch pilieroch: Transparentnosť, Inšpekcia a Adaptácia.", 
-                when: "Pre <b>moderné softvérové a webové projekty</b> v dynamickom prostredí, kde sa požiadavky menia a je nutná rýchla spätná väzba od trhu.", 
-                pros: "• Blesková adaptácia na zmeny.<br>• Pravidelné dodávanie hodnoty vo forme funkčného softvéru (Inkrementu).<br>• Zvyšuje tímovú motiváciu a komunikáciu.", 
-                cons: "• Ak sa pravidlá nedodržiavajú, vzniká chaos (tzv. Scrum-but).<br>• Chýbajúca fixná architektúra vopred môže menej skúseným tímom zlomiť väzy.", 
+                id: "scrum", category: "sdlc", categoryName: "Agilný Framework", title: "Scrum", icon: "fa-people-carry-box", color: "emerald", structureType: "composition",
+                what: "Najpoužívanejší agilný rámec. Nestanovuje technický postup kódovania, ale proces založený na tímovej samo-organizácii a troch pilieroch: Transparentnosť, Inšpekcia a Adaptácia.",
+                when: "Pre <b>moderné softvérové a webové projekty</b> v dynamickom prostredí, kde sa požiadavky menia a je nutná rýchla spätná väzba od trhu.",
+                pros: "• Blesková adaptácia na zmeny.<br>• Pravidelné dodávanie hodnoty vo forme funkčného softvéru.<br>• Zvyšuje tímovú motiváciu a komunikáciu.",
+                cons: "• Ak sa pravidlá nedodržiavajú, vzniká chaos (tzv. Scrum-but).<br>• Chýbajúca fixná architektúra vopred môže byť rizikom.",
                 steps: [
-                    { title: "Roly", desc: "Product Owner (spravuje priority), Scrum Master (procesný kouč), Developers (vývojári)." }, 
-                    { title: "Artefakty", desc: "Product Backlog (zoznam požiadaviek), Sprint Backlog (úlohy na šprint), Inkrement (hotový kód)." }, 
-                    { title: "Sprint", desc: "Fixný časový úsek (zvyčajne 2 týždne), počas ktorého sa vyvíja." }, 
+                    { title: "Roly", desc: "Product Owner (spravuje priority), Scrum Master (procesný kouč), Developers (vývojári)." },
+                    { title: "Artefakty", desc: "Product Backlog (zoznam požiadaviek), Sprint Backlog (úlohy na šprint), Inkrement (hotový kód)." },
+                    { title: "Sprint", desc: "Fixný časový úsek (zvyčajne 2 týždne), počas ktorého sa vyvíja." },
                     { title: "Ceremónie", desc: "Sprint Planning, Daily Scrum (15-min. míting), Sprint Review (ukážka) a Retrospektíva." }
-                ], 
+                ],
                 visualHtml: `<div class='flex items-center gap-4 text-center'><div class='bg-slate-700 p-3 rounded-lg w-20 flex flex-col justify-end relative h-24 border border-slate-500'><div class='absolute inset-x-2 top-2 border-b-4 border-slate-500'></div><div class='absolute inset-x-2 top-6 border-b-4 border-slate-500'></div><span class='text-[10px] text-white mt-auto z-10 font-bold'>Backlog</span></div><i class='fa-solid fa-arrow-right text-slate-500'></i><div class='relative w-28 h-28 flex justify-center items-center'><div class='absolute inset-0 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin'></div><div class='absolute inset-2 border-4 border-emerald-400 border-b-transparent rounded-full animate-[spin_3s_linear_infinite_reverse]'></div><span class='font-bold text-emerald-400 z-10 text-xs'>SPRINT<br><span class='text-[10px] font-normal'>(2-4 týždne)</span></span></div><i class='fa-solid fa-arrow-right text-slate-500'></i><div class='bg-emerald-600/30 border border-emerald-400 p-3 rounded-xl text-emerald-300 font-bold text-sm'><i class='fa-solid fa-box-open text-xl block mb-1'></i> Inkrement</div></div>`
             },
             {
-                id: "kanban", 
-                category: "sdlc", 
-                categoryName: "Agilný Framework", 
-                title: "Kanban", 
-                icon: "fa-bars-progress", 
-                color: "emerald", 
-                structureType: "composition", 
-                what: "Vizuálna agilná metóda zameraná výhradne na plynulý tok (Flow) práce. Na rozdiel od Scrumu <b>nemá fixné iterácie (šprinty)</b> ani zložité roly.", 
-                when: "Perfektné pre <b>údržbu (Maintenance), Helpdesk IT tímy a operácie</b>, kde úlohy prichádzajú neočakávane a plynule každý deň.", 
-                pros: "• Maximalizuje priepustnosť prác.<br>• Odhaľuje úzke hrdlá procesov.<br>• Nevyžaduje zmenu firemných rolí, ľahko sa zavádza.", 
-                cons: "• Chýbajúce fixné cykly sťažujú dlhodobé plánovanie termínov dodania pre klienta.", 
+                id: "kanban", category: "sdlc", categoryName: "Agilný Framework", title: "Kanban", icon: "fa-bars-progress", color: "emerald", structureType: "composition",
+                what: "Vizuálna agilná metóda zameraná výhradne na plynulý tok (Flow) práce. Na rozdiel od Scrumu <b>nemá fixné iterácie (šprinty)</b> ani zložité roly.",
+                when: "Perfektné pre <b>údržbu (Maintenance), Helpdesk IT tímy a operácie</b>, kde úlohy prichádzajú neočakávane a plynule každý deň.",
+                pros: "• Maximalizuje priepustnosť prác.<br>• Odhaľuje úzke hrdlá procesov.<br>• Nevyžaduje zmenu firemných rolí, ľahko sa zavádza.",
+                cons: "• Chýbajúce fixné cykly sťažujú dlhodobé plánovanie termínov dodania.",
                 steps: [
-                    { title: "Vizualizácia", desc: "Úlohy (lístočky) prúdia na tabuli cez stĺpce (To Do, In Progress, Done)." }, 
-                    { title: "WIP Limit", desc: "Tvrdé obmedzenie počtu rozpracovaných úloh (Work In Progress) v stĺpci." }, 
+                    { title: "Vizualizácia", desc: "Úlohy (lístočky) prúdia na tabuli cez stĺpce (To Do, In Progress, Done)." },
+                    { title: "WIP Limit", desc: "Tvrdé obmedzenie počtu rozpracovaných úloh (Work In Progress) v stĺpci." },
                     { title: "Pull systém", desc: "Nová úloha sa začne ('potiahne') až vtedy, keď sa predošlá dokončí a uvoľní sa kapacita." }
-                ], 
+                ],
                 visualHtml: `<div class='flex gap-3 w-full max-w-sm bg-slate-800 p-4 rounded-xl border border-slate-600'><div class='flex-1 bg-slate-900 rounded p-2 min-h-[120px]'><div class='text-[10px] text-slate-300 font-bold mb-3 border-b border-slate-700 pb-1'>To Do (3)</div><div class='bg-slate-700 h-5 rounded mb-2 border-l-4 border-blue-400'></div><div class='bg-slate-700 h-5 rounded mb-2 border-l-4 border-purple-400'></div><div class='bg-slate-700 h-5 rounded mb-2 border-l-4 border-pink-400'></div></div><div class='flex-1 bg-slate-900 rounded p-2 min-h-[120px] relative overflow-hidden'><div class='absolute inset-0 bg-yellow-900/20 z-0'></div><div class='text-[10px] text-yellow-400 font-bold mb-3 border-b border-slate-700 pb-1 relative z-10'>In Progress (Lim:2)</div><div class='bg-slate-700 h-5 rounded mb-2 border-l-4 border-yellow-400 shadow-[0_0_8px_rgba(250,204,21,0.5)] relative z-10'></div></div><div class='flex-1 bg-slate-900 rounded p-2 min-h-[120px]'><div class='text-[10px] text-emerald-500 font-bold mb-3 border-b border-slate-700 pb-1'>Done</div><div class='bg-slate-800 h-5 rounded mb-2 border-l-4 border-slate-500 opacity-50'></div></div></div>`
             },
             {
-                id: "xp", 
-                category: "sdlc", 
-                categoryName: "Agilný Framework", 
-                title: "XP (Extreme Programming)", 
-                icon: "fa-laptop-code", 
-                color: "emerald", 
-                structureType: "composition", 
-                what: "Agilná metodika extrémne zameraná na inžinierske a programátorské praktiky. Tlačí technickú dokonalosť kódu a stabilitu na maximum.", 
-                when: "Vhodné pre menšie tímy seniorov, v prostredí, ktoré je <b>kritické na bezchybnosť</b> a technologické požiadavky sa radikálne menia.", 
-                pros: "• Produkuje suverénne najstabilnejší a najčistejší softvér.<br>• Chyby sú odhalené okamžite. Kód je dokonale pokrytý testami.", 
-                cons: "• Vysoké personálne náklady. Firmy často odmietajú platiť dvoch programátorov za prácu pri jednom PC (Pair programming).", 
+                id: "xp", category: "sdlc", categoryName: "Agilný Framework", title: "XP (Extreme Programming)", icon: "fa-laptop-code", color: "emerald", structureType: "composition",
+                what: "Agilná metodika extrémne zameraná na inžinierske a programátorské praktiky. Tlačí technickú dokonalosť kódu a stabilitu na maximum.",
+                when: "Vhodné pre menšie tímy seniorov, v prostredí, ktoré je <b>kritické na bezchybnosť</b> a technologické požiadavky sa radikálne menia.",
+                pros: "• Produkuje suverénne najstabilnejší a najčistejší softvér.<br>• Chyby sú odhalené okamžite. Kód je dokonale pokrytý testami.",
+                cons: "• Vysoké personálne náklady kvôli párovému programovaniu.<br>• Vyžaduje veľmi disciplinovaných vývojárov.",
                 steps: [
-                    { title: "TDD (Test-Driven Dev)", desc: "Najprv sa napíše test pre funkciu, až potom funkčný kód, ktorý ním musí prejsť." }, 
-                    { title: "Párové programovanie", desc: "Dvaja sedia pri jednom PC. Jeden píše kód (Vodič), druhý ho okamžite reviduje (Navigátor)." }, 
-                    { title: "Kontinuálna integrácia", desc: "Kód sa spája do celku aj viackrát denne." }, 
+                    { title: "TDD (Test-Driven Dev)", desc: "Najprv sa napíše test pre funkciu, až potom funkčný kód, ktorý ním musí prejsť." },
+                    { title: "Párové programovanie", desc: "Dvaja sedia pri jednom PC. Jeden píše kód (Vodič), druhý ho okamžite reviduje (Navigátor)." },
+                    { title: "Kontinuálna integrácia", desc: "Kód sa spája do celku aj viackrát denne." },
                     { title: "Spoločné vlastníctvo", desc: "Ktokoľvek môže upraviť akúkoľvek časť kódu." }
-                ], 
+                ],
                 visualHtml: `<div class='flex flex-col items-center gap-4'><div class='flex items-center gap-6 bg-slate-800 p-4 rounded-2xl border border-emerald-500/50 shadow-lg'><div class='text-center'><i class='fa-solid fa-user-astronaut text-3xl text-emerald-400 mb-1'></i><p class='text-[10px] text-slate-300'>Navigátor (Reviduje)</p></div><i class='fa-solid fa-laptop-code text-5xl text-white'></i><div class='text-center'><i class='fa-solid fa-user-ninja text-3xl text-emerald-400 mb-1'></i><p class='text-[10px] text-slate-300'>Vodič (Píše kód)</p></div></div><div class='flex items-center gap-2 text-emerald-300 font-mono text-xs bg-emerald-900/30 px-4 py-2 rounded-full border border-emerald-700'><i class='fa-solid fa-rotate border-r border-emerald-700 pr-2'></i> TDD: Najprv Test <i class='fa-solid fa-arrow-right mx-1 text-slate-500'></i> Kód <i class='fa-solid fa-arrow-right mx-1 text-slate-500'></i> Refaktor</div></div>`
             },
             {
-                id: "crystal", 
-                category: "sdlc", 
-                categoryName: "Agilná Rodina", 
-                title: "Crystal", 
-                icon: "fa-gem", 
-                color: "emerald", 
-                structureType: "composition", 
-                what: "Celá rodina prispôsobiteľných agilných metodík. Filozofia hlása: Proces by sa mal prispôsobiť ľuďom a veľkosti tímu, nie ľudia pevnému procesu.", 
-                when: "Ak má tím <b>netypické zloženie, vysokú autonómiu</b> a chce si vytvoriť vlastný, organický proces šitý na mieru, bez tvrdých pravidiel Scrumu.", 
-                pros: "• Maximálna flexibilita. Netlačí malý tím do zbytočnej a ťažkej byrokracie.", 
-                cons: "• Úspech absolútne závisí na motivácii jednotlivcov. Bez pravidiel môže zlá komunikácia tím rýchlo zničiť.", 
+                id: "crystal", category: "sdlc", categoryName: "Agilná Rodina", title: "Crystal", icon: "fa-gem", color: "emerald", structureType: "composition",
+                what: "Celá rodina prispôsobiteľných agilných metodík. Filozofia hlása: Proces by sa mal prispôsobiť ľuďom a veľkosti tímu, nie ľudia pevnému procesu.",
+                when: "Ak má tím <b>netypické zloženie, vysokú autonómiu</b> a chce si vytvoriť vlastný, organický proces šitý na mieru, bez tvrdých pravidiel Scrumu.",
+                pros: "• Maximálna flexibilita šitá na mieru veľkosti tímu.<br>• Nízka administratívna záťaž pre malé tímy.",
+                cons: "• Úspech absolútne závisí na motivácii jednotlivcov.<br>• Chýbajúca jasná štruktúra môže viesť k zlej komunikácii vo väčších tímoch.",
                 steps: [
-                    { title: "Crystal Clear", desc: "Pre tímy od 1 do 6 ľudí. Extrémne neformálne, komunikácia funguje 'osmoticky' v jednej miestnosti." }, 
-                    { title: "Crystal Yellow", desc: "Tímy od 7 do 20 ľudí. Pribúdajú základné roly (napr. vlastník kódu)." }, 
+                    { title: "Crystal Clear", desc: "Pre tímy od 1 do 6 ľudí. Extrémne neformálne, komunikácia funguje 'osmoticky' v jednej miestnosti." },
+                    { title: "Crystal Yellow", desc: "Tímy od 7 do 20 ľudí. Pribúdajú základné roly (napr. vlastník kódu)." },
                     { title: "Orange / Red", desc: "Pre väčšie tímy (desiatky ľudí) sa zavádza prísnejšia architektúra a koordinácia." }
-                ], 
+                ],
                 visualHtml: `<div class='flex items-end gap-6 border-b-2 border-slate-700 pb-2'><div class='flex flex-col items-center gap-2'><i class='fa-regular fa-gem text-2xl text-slate-300 drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]'></i><span class='text-[10px] text-slate-400 font-bold'>CLEAR (1-6)</span></div><div class='flex flex-col items-center gap-2'><i class='fa-solid fa-gem text-3xl text-yellow-400 drop-shadow-[0_0_10px_rgba(250,204,21,0.5)]'></i><span class='text-[10px] text-yellow-500 font-bold'>YELLOW (7-20)</span></div><div class='flex flex-col items-center gap-2'><i class='fa-solid fa-gem text-4xl text-orange-500 drop-shadow-[0_0_10px_rgba(249,115,22,0.5)]'></i><span class='text-[10px] text-orange-600 font-bold'>ORANGE (21-50)</span></div><div class='flex flex-col items-center gap-2'><i class='fa-solid fa-gem text-5xl text-red-600 drop-shadow-[0_0_10px_rgba(220,38,38,0.5)]'></i><span class='text-[10px] text-red-500 font-bold'>RED (50+)</span></div></div>`
             },
             {
-                id: "fdd", 
-                category: "sdlc", 
-                categoryName: "Agilný Framework", 
-                title: "FDD (Feature-Driven Development)", 
-                icon: "fa-puzzle-piece", 
-                color: "emerald", 
-                structureType: "sequence", 
-                what: "Agilný, pragmatický prístup. Vývoj nie je zameraný na technické moduly, ale výhradne na budovanie malých, klientom oceniteľných vlastností (Features).", 
-                when: "Využíva sa pri <b>veľkých Enterprise projektoch so zložitou doménou</b> (banky, poisťovne) s desiatkami programátorov.", 
-                pros: "• Skvele sa škáluje. Poskytuje manažmentu presný percentuálny prehľad o tom, koľko funkcií už systém dokáže robiť.", 
-                cons: "• Pre malé aplikácie je úvodná požiadavka tvorby komplexných biznis a UML modelov len stratou času (overkill).", 
+                id: "fdd", category: "sdlc", categoryName: "Agilný Framework", title: "FDD (Feature-Driven Development)", icon: "fa-puzzle-piece", color: "emerald", structureType: "sequence",
+                what: "Agilný, pragmatický prístup. Vývoj nie je zameraný na technické moduly, ale výhradne na budovanie malých, klientom oceniteľných vlastností (Features).",
+                when: "Využíva sa pri <b>veľkých Enterprise projektoch so zložitou doménou</b> (banky, poisťovne) s desiatkami programátorov.",
+                pros: "• Skvele sa škáluje pre veľké tímy.<br>• Poskytuje manažmentu presný prehľad o stave vývoja funkcií.",
+                cons: "• Vyžaduje silné modelovacie zručnosti (UML).<br>• Pre malé projekty je proces zbytočne komplexný.",
                 steps: [
-                    { title: "Celkový model", desc: "Vytvorenie architektonického doménového modelu (napr. v UML)." }, 
-                    { title: "Feature List", desc: "Zostavenie vyčerpávajúceho zoznamu všetkých požadovaných funkcií." }, 
-                    { title: "Plánovanie", desc: "Zoradenie vývoja podľa priorít jednotlivých funkcií." }, 
+                    { title: "Celkový model", desc: "Vytvorenie architektonického doménového modelu (napr. v UML)." },
+                    { title: "Feature List", desc: "Zostavenie vyčerpávajúceho zoznamu všetkých požadovaných funkcií." },
+                    { title: "Plánovanie", desc: "Zoradenie vývoja podľa priorít jednotlivých funkcií." },
                     { title: "Dizajn a Build", desc: "Rýchly návrh a nakódovanie funkcie (vývoj jednej nesmie presiahnuť 2 týždne)." }
-                ], 
+                ],
                 visualHtml: `<div class='relative w-48 h-32 bg-slate-800 border-2 border-slate-600 rounded-lg p-2 grid grid-cols-3 gap-2 shadow-xl'><div class='bg-emerald-500/80 rounded flex items-center justify-center border border-emerald-300'><i class='fa-solid fa-puzzle-piece text-white'></i></div><div class='bg-emerald-500/80 rounded flex items-center justify-center border border-emerald-300'><i class='fa-solid fa-puzzle-piece text-white'></i></div><div class='bg-slate-700 rounded border border-slate-500 border-dashed'></div><div class='bg-emerald-500/80 rounded flex items-center justify-center border border-emerald-300'><i class='fa-solid fa-puzzle-piece text-white'></i></div><div class='bg-slate-700 rounded border border-slate-500 border-dashed'></div><div class='bg-slate-700 rounded border border-slate-500 border-dashed'></div><div class='absolute -top-3 left-2 bg-dark px-2 text-[10px] text-emerald-400 font-bold uppercase'>Celkový Model Tímu</div></div>`
             },
             {
-                id: "lean", 
-                category: "sdlc", 
-                categoryName: "Princípy / Metodika", 
-                title: "Lean (Štíhly vývoj)", 
-                icon: "fa-leaf", 
-                color: "emerald", 
-                structureType: "composition", 
-                what: "Manažérska filozofia (inšpirovaná Toyotou). Jej pointou je maximalizácia odovzdanej hodnoty pre zákazníka a nekompromisná eliminácia plytvania (Muda).", 
-                when: "Srdce všetkých <b>moderných startupov (Lean Startup)</b>, inovatívnych projektov a pri snahe o zoštíhlenie korporátnych procesov.", 
-                pros: "• Až 60% vyvinutých IT funkcií používatelia nikdy nepoužijú. Lean zabraňuje plateniu za túto zbytočnú prácu. Urýchľuje čas uvedenia na trh.", 
-                cons: "• Vyžaduje totálnu zmenu firemného myslenia od CEO až po programátorov. Bez vôle manažmentu nefunguje.", 
+                id: "lean", category: "sdlc", categoryName: "Princípy / Metodika", title: "Lean (Štíhly vývoj)", icon: "fa-leaf", color: "emerald", structureType: "composition",
+                what: "Manažérska filozofia (inšpirovaná Toyotou). Jej pointou je maximalizácia odovzdanej hodnoty pre zákazníka a nekompromisná eliminácia plytvania (Muda).",
+                when: "Srdce všetkých <b>moderných startupov (Lean Startup)</b>, inovatívnych projektov a pri snahe o zoštíhlenie korporátnych procesov.",
+                pros: "• Výrazne znižuje náklady elimináciou zbytočnej práce.<br>• Zrýchľuje čas dodania produktu na trh.",
+                cons: "• Vyžaduje úplnú zmenu firemnej kultúry.<br>• Náročné na presné určenie toho, čo je 'plytvanie'.",
                 steps: [
-                    { title: "Eliminuj plytvanie", desc: "Zruš byrokraciu, prestoje, nedokončenú prácu a funkcie, ktoré klient nepýtal." }, 
-                    { title: "Rozhoduj neskoro", desc: "Odlož nezvratné rozhodnutia dovtedy, kým nemáš tvrdé fakty z trhu." }, 
-                    { title: "Dodávaj rýchlo", desc: "Čím skôr je produkt vonku, tým skôr získaš spätnú väzbu." }, 
+                    { title: "Eliminuj plytvanie", desc: "Zruš byrokraciu, prestoje, nedokončenú prácu a funkcie, ktoré klient nepýtal." },
+                    { title: "Rozhoduj neskoro", desc: "Odlož nezvratné rozhodnutia dovtedy, kým nemáš tvrdé fakty z trhu." },
+                    { title: "Dodávaj rýchlo", desc: "Čím skôr je produkt vonku, tým skôr získaš spätnú väzbu." },
                     { title: "Optimalizuj celok", desc: "Vylepšuj celofiremný proces, nielen jedno lokálne oddelenie." }
-                ], 
+                ],
                 visualHtml: `<div class='flex items-center w-full max-w-sm h-24'><div class='h-full w-24 bg-red-500/20 border-y-2 border-l-2 border-red-500/50 flex flex-col justify-center items-center text-red-400 text-xs font-bold rounded-l-lg'><span>Plytvanie</span><i class='fa-solid fa-trash-can mt-1'></i></div><div class='h-full flex-1 bg-gradient-to-r from-emerald-600 to-emerald-400 flex items-center justify-center clip-arrow shadow-lg relative z-10 text-white font-bold tracking-widest' style='clip-path: polygon(0 20%, 80% 20%, 100% 50%, 80% 80%, 0 80%);'>HODNOTA</div></div>`
             },
             {
-                id: "devops", 
-                category: "sdlc", 
-                categoryName: "Kultúra & Metodika", 
-                title: "DevOps", 
-                icon: "fa-infinity", 
-                color: "emerald", 
-                structureType: "composition", 
-                what: "Kultúrne IT hnutie a sada technických praktík, ktoré rúcajú historické bariéry medzi programátormi (Development) a administrátormi serverov (Operations).", 
-                when: "Priemyselný štandard pre <b>cloudové aplikácie, mikroservisnú architektúru</b> a moderné webové platformy.", 
-                pros: "• Umožňuje bezpečne nasadzovať nový kód do produkcie stovky krát denne úplne bez výpadkov.<br>• Definitívne odstraňuje problém 'u mňa na PC to funguje'.", 
-                cons: "• Vyžaduje úzko špecializovaných IT expertov a masívne vstupné počiatočné investície do infraštruktúry.", 
+                id: "devops", category: "sdlc", categoryName: "Kultúra & Metodika", title: "DevOps", icon: "fa-infinity", color: "emerald", structureType: "composition",
+                what: "Kultúrne IT hnutie a sada technických praktík, ktoré rúcajú historické bariéry medzi programátormi (Development) a administrátormi serverov (Operations).",
+                when: "Priemyselný štandard pre <b>cloudové aplikácie, mikroservisnú architektúru</b> a moderné webové platformy.",
+                pros: "• Umožňuje extrémne rýchle a bezpečné nasadzovanie kódu.<br>• Zlepšuje stabilitu systému a skracuje čas opravy chýb.",
+                cons: "• Vyžaduje vysokú počiatočnú investíciu do infraštruktúry.<br>• Náročné na nábor expertov s prierezovými znalosťami.",
                 steps: [
-                    { title: "CI / CD Pipelines", desc: "Robotizované linky. Keď vývojár uloží kód, systém ho sám otestuje a nahrá na server." }, 
-                    { title: "Infrastructure as Code", desc: "Servery a siete sa nenastavujú manuálne, ale zapisujú a spúšťajú sa cez skripty." }, 
+                    { title: "CI / CD Pipelines", desc: "Robotizované linky. Keď vývojár uloží kód, systém ho sám otestuje a nahrá na server." },
+                    { title: "Infrastructure as Code", desc: "Servery a siete sa nenastavujú manuálne, ale zapisujú a spúšťajú sa cez skripty." },
                     { title: "Monitoring", desc: "Neustále automatizované sledovanie zdravia a výkonu celej aplikácie." }
-                ], 
+                ],
                 visualHtml: `<div class='relative flex items-center justify-center w-full max-w-xs h-32'><div class='w-28 h-28 border-[6px] border-blue-500 border-r-transparent rounded-full flex items-center justify-center translate-x-3 z-10 rotate-45 bg-[#0f172a] shadow-[-10px_0_20px_rgba(59,130,246,0.2)]'><span class='text-blue-400 font-extrabold text-lg -rotate-45 ml-2'>DEV</span></div><div class='w-28 h-28 border-[6px] border-emerald-500 border-l-transparent rounded-full flex items-center justify-center -translate-x-3 z-0 -rotate-45 bg-[#0f172a] shadow-[10px_0_20px_rgba(16,185,129,0.2)]'><span class='text-emerald-400 font-extrabold text-lg rotate-45 mr-2'>OPS</span></div></div>`
             },
             {
-                id: "rad", 
-                category: "sdlc", 
-                categoryName: "Metodika Vývoja", 
-                title: "RAD (Rapid Application Development)", 
-                icon: "fa-bolt", 
-                color: "blue", 
-                structureType: "sequence", 
-                what: "Prístup zameraný na extrémnu kompresiu vývojového cyklu. Zložité analytické plánovanie ustupuje do úzadia v prospech bleskovej rýchlosti vývoja a interakcie s klientom.", 
-                when: "Vývoj aplikácií zameraných silne na <b>používateľské prostredie (GUI)</b>, pri Low-code/No-code platformách a interných CRM nástrojoch.", 
-                pros: "• Rýchlosť dodania grafického rozhrania je obrovská.<br>• Používatelia presne vedia, s čím budú pracovať, lebo sa na tom vizuálne podieľali.", 
-                cons: "• Aplikácie často trpia nedostatkom vnútornej prepracovanosti – na oko vyzerajú skvelo, ale pod povrchom nemusia zvládnuť škálovanie či bezpečnosť.", 
+                id: "rad", category: "sdlc", categoryName: "Metodika Vývoja", title: "RAD (Rapid Application Development)", icon: "fa-bolt", color: "blue", structureType: "sequence",
+                what: "Prístup zameraný na extrémnu kompresiu vývojového cyklu. Zložité analytické plánovanie ustupuje do úzadia v prospech bleskovej rýchlosti vývoja a interakcie s klientom.",
+                when: "Vývoj aplikácií zameraných silne na <b>používateľské prostredie (GUI)</b>, pri Low-code/No-code platformách a interných CRM nástrojoch.",
+                pros: "• Mimoriadne rýchle dodanie prvých funkčných verzií.<br>• Vysoká spokojnosť používateľov vďaka aktívnemu zapojeniu.",
+                cons: "• Riziko zanedbania technickej kvality architektúry.<br>• Náročné na neustálu dostupnosť používateľov pre JAD sessions.",
                 steps: [
-                    { title: "Hrubé plánovanie", desc: "Zadefinujú sa iba najzákladnejšie požiadavky a ciele." }, 
-                    { title: "JAD Sessions", desc: "Tvorba interaktívnych prototypov priamo na workshopoch za účasti koncových používateľov." }, 
+                    { title: "Hrubé plánovanie", desc: "Zadefinujú sa iba najzákladnejšie požiadavky a ciele." },
+                    { title: "JAD Sessions", desc: "Tvorba interaktívnych prototypov priamo na workshopoch za účasti koncových používateľov." },
                     { title: "Rýchla konštrukcia", desc: "Namiesto programovania od nuly sa využívajú generátory kódu a existujúce komponenty." }
-                ], 
+                ],
                 visualHtml: `<div class='flex items-center gap-6'><div class='flex flex-col items-center gap-2'><div class='w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg border-2 border-blue-400'><i class='fa-solid fa-cubes'></i></div><span class='text-[10px] text-blue-400 font-bold uppercase'>Komponenty</span></div><i class='fa-solid fa-bolt text-yellow-400 text-3xl animate-pulse'></i><div class='flex flex-col items-center gap-2'><div class='w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center text-white text-2xl shadow-lg border-2 border-purple-400'><i class='fa-solid fa-user-tie'></i></div><span class='text-[10px] text-purple-400 font-bold uppercase'>Dizajn s klientom</span></div></div>`
             },
             {
-                id: "prototyping", 
-                category: "sdlc", 
-                categoryName: "Prístup / Technika", 
-                title: "Prototypovanie", 
-                icon: "fa-object-group", 
-                color: "blue", 
-                structureType: "sequence", 
-                what: "Technika vytvorenia vizuálneho 'mock-upu' (atrapy) systému ešte pred začiatkom skutočného a drahého programovania logiky a databáz.", 
-                when: "Súčasť každej úvodnej fázy vývoja <b>webových, mobilných a užívateľských aplikácií (UI/UX)</b>, najmä ak klient nevie presne opísať, čo chce.", 
-                pros: "• Odstraňuje zlú komunikáciu. Oproti textovému zadaniu si klient dokáže systém reálne predstaviť a ihneď ho pripomienkovať.", 
-                cons: "• Zákazník často získa mylný dojem, že po vyklikaní grafiky je 'programovanie hotové' a nechápe nutnosť stoviek hodín práce v pozadí.", 
+                id: "prototyping", category: "sdlc", categoryName: "Prístup / Technika", title: "Prototypovanie", icon: "fa-object-group", color: "blue", structureType: "sequence",
+                what: "Technika vytvorenia vizuálneho 'mock-upu' (atrapy) systému ešte pred začiatkom skutočného a drahého programovania logiky a databáz.",
+                when: "Súčasť každej úvodnej fázy vývoja <b>webových, mobilných a užívateľských aplikácií (UI/UX)</b>, najmä ak klient nevie presne opísať, čo chce.",
+                pros: "• Dramaticky znižuje riziko nepochopenia požiadaviek.<br>• Uľahčuje testovanie použiteľnosti v skorých fázach.",
+                cons: "• Zákazník môže nadobudnúť dojem, že po prototype je vývoj hotový.<br>• Nadmerné opravovanie prototypu môže neúmerne predĺžiť analýzu.",
                 steps: [
-                    { title: "Zahadzovaný (Throwaway)", desc: "Rýchlo sa navrhnú vizuály. Po schválení sa tento dizajn 'zahodí' a kód sa postaví odborne a od nuly." }, 
+                    { title: "Zahadzovaný (Throwaway)", desc: "Rýchlo sa navrhnú vizuály. Po schválení sa tento dizajn 'zahodí' a kód sa postaví odborne a od nuly." },
                     { title: "Evolučný", desc: "Počiatočný dizajn sa nezahodí, ale programátori doň postupne pridávajú skutočnú logiku až do finále." }
-                ], 
+                ],
                 visualHtml: `<div class='w-28 h-48 border-[3px] border-slate-500 rounded-3xl p-2 relative bg-slate-900'><div class='w-10 h-1 bg-slate-700 rounded-full mx-auto mb-3'></div><div class='w-full h-12 bg-slate-800 rounded mb-2 border border-slate-700 flex items-center justify-center'><i class='fa-regular fa-image text-slate-600'></i></div><div class='w-3/4 h-2 bg-slate-700 rounded mb-2'></div><div class='w-1/2 h-2 bg-slate-700 rounded mb-4'></div><div class='w-full h-8 bg-blue-600/50 rounded border border-blue-500 flex items-center justify-center text-[10px] text-blue-200 font-bold'>TLAČIDLO</div><div class='absolute bottom-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-slate-600 rounded-full'></div></div>`
             },
             {
-                id: "prince2", 
-                category: "pm", 
-                categoryName: "Projektové riadenie", 
-                title: "PRINCE2", 
-                icon: "fa-crown", 
-                color: "purple", 
-                structureType: "composition", 
-                what: "Celosvetovo uznávaná, mimoriadne prísne organizovaná procesná metodika pôvodom z UK. Nezaoberá sa technickou prácou, ale výhradne byrokratickým riadením a kontrolou projektu.", 
-                when: "Ideálne pre <b>štátne a vládne projekty</b>, čerpanie eurofondov a veľké korporátne projekty podliehajúce prísnemu finančnému auditu.", 
-                pros: "• Jasne definuje, kto je za čo zodpovedný.<br>• Priebežnými manažérskymi 'bránami' prísne zabraňuje zbytočnému finančnému plytvaniu.", 
-                cons: "• Generuje rozsiahle množstvo 'manažérskych produktov' (rozsiahla byrokracia), čo výrazne spomaľuje flexibilitu prác.", 
+                id: "prince2", category: "pm", categoryName: "Projektové riadenie", title: "PRINCE2", icon: "fa-crown", color: "purple", structureType: "composition",
+                what: "Celosvetovo uznávaná, mimoriadne prísne organizovaná procesná metodika pôvodom z UK. Nezaoberá sa technickou prácou, ale výhradne byrokratickým riadením a kontrolou projektu.",
+                when: "Ideálne pre <b>štátne a vládne projekty</b>, čerpanie eurofondov a veľké korporátne projekty podliehajúce prísnemu finančnému auditu.",
+                pros: "• Maximálna úroveň procesnej kontroly a transparentnosti.<br>• Jasne definované zodpovednosti pre každú rolu.",
+                cons: "• Príliš byrokratické pre malé projekty.<br>• Nízka pružnosť v rýchlo sa meniacom prostredí.",
                 steps: [
-                    { title: "Štruktúra", desc: "Metodika stojí na 7 princípoch, 7 témach a 7 procesoch." }, 
-                    { title: "Business Case", desc: "Základom je neustále overovanie Obchodného prípadu. Ak projekt prestane byť ziskový, okamžite sa ruší." }, 
-                    { title: "Manažérske brány", desc: "Projekt je členený na Etapy. Prechod do novej etapy musí vždy formálne schváliť Riadiaci výbor." }, 
+                    { title: "Štruktúra", desc: "Metodika stojí na 7 princípoch, 7 témach a 7 procesoch." },
+                    { title: "Business Case", desc: "Základom je neustále overovanie Obchodného prípadu. Ak projekt prestane byť ziskový, okamžite sa ruší." },
+                    { title: "Manažérske brány", desc: "Projekt je členený na Etapy. Prechod do novej etapy musí vždy formálne schváliť Riadiaci výbor." },
                     { title: "Tolerancie", desc: "Delegovanie zodpovednosti (Riadenie na základe výnimiek)." }
-                ], 
+                ],
                 visualHtml: `<div class='flex items-center gap-1 w-full max-w-md bg-slate-800 p-4 rounded-xl border border-slate-600 overflow-x-auto'><div class='bg-purple-800 p-2 text-xs font-bold text-white rounded border border-purple-600'>Štart</div><div class='w-4 h-12 bg-red-600 flex items-center justify-center rounded-sm shadow-[0_0_10px_rgba(220,38,38,0.8)] z-10'><i class='fa-solid fa-lock text-[8px] text-white'></i></div><div class='bg-purple-700 p-2 text-xs font-bold text-white rounded border border-purple-500 flex-1 text-center'>Etapa 1</div><div class='w-4 h-12 bg-red-600 flex items-center justify-center rounded-sm shadow-[0_0_10px_rgba(220,38,38,0.8)] z-10'><i class='fa-solid fa-lock text-[8px] text-white'></i></div><div class='bg-purple-600 p-2 text-xs font-bold text-white rounded border border-purple-400 flex-1 text-center'>Etapa 2</div><div class='w-4 h-12 bg-red-600 flex items-center justify-center rounded-sm shadow-[0_0_10px_rgba(220,38,38,0.8)] z-10'><i class='fa-solid fa-lock text-[8px] text-white'></i></div><div class='bg-purple-500 p-2 text-xs font-bold text-white rounded border border-purple-300'>Koniec</div></div>`
             },
             {
-                id: "pmbok", 
-                category: "pm", 
-                categoryName: "Projektové riadenie", 
-                title: "PMBOK / PMI", 
-                icon: "fa-book", 
-                color: "purple", 
-                structureType: "composition", 
-                what: "PMBOK nie je postupná metodika. Ide o gigantický medzinárodný štandard a encyklopédiu tých najosvedčenejších praktík riadenia akéhokoľvek typu projektu od amerického inštitútu PMI.", 
-                when: "Vyžadovaný základ pre držiteľov <b>certifikácie PMP</b>. Slúži ako príručka pri nastavovaní procesov vo firemných PMO (Project Management Office).", 
-                pros: "• Tvorí univerzálny pracovný jazyk pre manažérov na celom svete.<br>• Poskytuje dokonalý arzenál techník pre akýkoľvek problém.", 
-                cons: "• Snaha o inštaláciu kompletného procesného modelu PMBOK do malého IT projektu znamená administratívnu 'samovraždu'.", 
+                id: "pmbok", category: "pm", categoryName: "Projektové riadenie", title: "PMBOK / PMI", icon: "fa-book", color: "purple", structureType: "composition",
+                what: "PMBOK nie je postupná metodika. Ide o gigantický medzinárodný štandard a encyklopédiu tých najosvedčenejších praktík riadenia akéhokoľvek typu projektu od amerického inštitútu PMI.",
+                when: "Vyžadovaný základ pre držiteľov <b>certifikácie PMP</b>. Slúži ako príručka pri nastavovaní procesov vo firemných PMO (Project Management Office).",
+                pros: "• Univerzálny medzinárodný štandard pre projektových manažérov.<br>• Komplexná zbierka overených nástrojov pre všetky oblasti riadenia.",
+                cons: "• Extrémne náročné na implementáciu v plnom rozsahu.<br>• Vyžaduje vysokú mieru odbornosti PM.",
                 steps: [
-                    { title: "5 Procesných skupín", desc: "Zahájenie, Plánovanie, Realizácia, Monitorovanie/Kontrola, Uzavretie." }, 
-                    { title: "10 Znalostných oblastí", desc: "Riadenie rozsahu, času, nákladov, kvality, ľudí, komunikácie, rizík, nákupu a stakeholderov." }, 
+                    { title: "5 Procesných skupín", desc: "Zahájenie, Plánovanie, Realizácia, Monitorovanie/Kontrola, Uzavretie." },
+                    { title: "10 Znalostných oblastí", desc: "Riadenie rozsahu, času, nákladov, kvality, ľudí, komunikácie, rizík, nákupu a stakeholderov." },
                     { title: "Vstupy a Výstupy", desc: "Každý proces má jasne definované to, čo potrebuje k výkonu a aké dokumenty z neho vypadnú." }
-                ], 
+                ],
                 visualHtml: `<div class='bg-slate-800 p-3 rounded-lg border border-slate-600 w-full max-w-sm'><div class='grid grid-cols-4 gap-1 mb-2 text-[8px] text-slate-400 font-bold text-center uppercase tracking-wider'><div></div><div>Zahájiť</div><div>Plánovať</div><div>Urobiť</div></div><div class='grid grid-cols-4 gap-1 mb-1'><div class='text-[8px] text-purple-300 flex items-center'>Rozsah</div><div class='bg-slate-700 h-4 rounded border border-slate-600'></div><div class='bg-purple-500/50 h-4 rounded border border-purple-400'></div><div class='bg-slate-700 h-4 rounded border border-slate-600'></div></div><div class='grid grid-cols-4 gap-1 mb-1'><div class='text-[8px] text-purple-300 flex items-center'>Čas</div><div class='bg-slate-700 h-4 rounded border border-slate-600'></div><div class='bg-purple-500/50 h-4 rounded border border-purple-400'></div><div class='bg-purple-500/50 h-4 rounded border border-purple-400'></div></div><div class='grid grid-cols-4 gap-1'><div class='text-[8px] text-purple-300 flex items-center'>Náklady</div><div class='bg-slate-700 h-4 rounded border border-slate-600'></div><div class='bg-purple-500/50 h-4 rounded border border-purple-400'></div><div class='bg-slate-700 h-4 rounded border border-slate-600'></div></div></div>`
             },
             {
-                id: "ipma", 
-                category: "pm", 
-                categoryName: "Projektové riadenie", 
-                title: "IPMA", 
-                icon: "fa-certificate", 
-                color: "purple", 
-                structureType: "composition", 
-                what: "Európsky prístup s filozofiou: 'Úspešné projekty nerobia metodiky, ale samotní manažéri'. Nesústreďuje sa na procesy, ale na osobnostný sebarozvoj a certifikovanie kompetencií človeka.", 
-                when: "Pre <b>celoživotné budovanie kariéry</b> (certifikáty Level D až A) a v prostredí, kde zlyháva komunikácia a je nutné riešiť tímovú kultúru.", 
-                pros: "• Produkuje sebavedomých vedúcich so silnými 'soft-skills', ktorí reálne zvládajú krízovú prácu pod stresom a urovnávanie konfliktov.", 
-                cons: "• Nedá vám presnú šablónu (proces) na to, ako zorganizovať konkrétny vývojový cyklus softvéru.", 
+                id: "ipma", category: "pm", categoryName: "Projektové riadenie", title: "IPMA", icon: "fa-certificate", color: "purple", structureType: "composition",
+                what: "Európsky prístup s filozofiou: 'Úspešné projekty nerobia metodiky, ale samotní manažéri'. Nesústreďuje sa na procesy, ale na osobnostný sebarozvoj a certifikovanie kompetencií človeka.",
+                when: "Pre <b>celoživotné budovanie kariéry</b> (certifikáty Level D až A) a v prostredí, kde zlyháva komunikácia a je nutné riešiť tímovú kultúru.",
+                pros: "• Silný dôraz na 'soft-skills' a vedenie ľudí.<br>• Skvelé pre rozvoj reálnych kompetencií lídra v stresových situáciách.",
+                cons: "• Neposkytuje konkrétny procesný návod pre vývoj IS.<br>• Náročné na subjektívne hodnotenie kompetencií.",
                 steps: [
-                    { title: "Praktické znalosti", desc: "Zručnosť použiť plánovacie nástroje, odhadovať náklady a riadiť rozsah." }, 
-                    { title: "Ľudské kompetencie", desc: "Leadership, riešenie konfliktov, emočná inteligencia a vyjednávanie." }, 
+                    { title: "Praktické znalosti", desc: "Zručnosť použiť plánovacie nástroje, odhadovať náklady a riadiť rozsah." },
+                    { title: "Ľudské kompetencie", desc: "Leadership, riešenie konfliktov, emočná inteligencia a vyjednávanie." },
                     { title: "Kontextuálne znalosti", desc: "Chápanie strategického fungovania celého podniku a jeho financií." }
-                ], 
+                ],
                 visualHtml: `<div class='relative w-32 h-32 flex items-center justify-center'><i class='fa-solid fa-eye text-6xl text-purple-500 z-10 drop-shadow-xl'></i><div class='absolute top-0 right-0 w-12 h-12 bg-pink-500/30 rounded-full border border-pink-400 flex items-center justify-center text-[8px] font-bold text-pink-200 text-center animate-pulse'>Ľudia a Mravy</div><div class='absolute bottom-2 right-4 w-12 h-12 bg-blue-500/30 rounded-full border border-blue-400 flex items-center justify-center text-[8px] font-bold text-blue-200 text-center'>Prax v Odbore</div><div class='absolute top-6 left-0 w-12 h-12 bg-emerald-500/30 rounded-full border border-emerald-400 flex items-center justify-center text-[8px] font-bold text-emerald-200 text-center'>Podnikový Kontext</div></div>`
             },
             {
-                id: "comparison", 
-                category: "pm", 
-                categoryName: "Projektové riadenie", 
-                title: "Porovnanie a výber PM metód", 
-                icon: "fa-scale-balanced", 
-                color: "purple", 
-                structureType: "composition", 
-                what: "Zhrnutie 'Veľkej trojky' (PRINCE2 vs. PMBOK vs. IPMA). Žiadna nehrá rolu samospásnej zbrane – každá odpovedá na úplne iné strategické potreby firmy.", 
-                when: "Využívané pri <b>strategickom rozhodovaní</b>, kedy firma zakladá Projektovú Kanceláriu (PMO) a potrebuje stanoviť interné pravidlá vývoja.", 
-                pros: "• V moderných firmách dominuje <b>Hybridná metodika</b>. Firma zoberie štruktúru z PRINCE2, analytické tabuľky z PMBOK a vedúcich pošle na školenia k IPMA.", 
-                cons: "• Slepé spoliehanie sa len na jednu metodiku často vedie k byrokratickému kolapsu.", 
+                id: "comparison", category: "pm", categoryName: "Projektové riadenie", title: "Porovnanie a výber PM metód", icon: "fa-scale-balanced", color: "purple", structureType: "composition",
+                what: "Zhrnutie 'Veľkej trojky' (PRINCE2 vs. PMBOK vs. IPMA). Žiadna nehrá rolu samospásnej zbrane – každá odpovedá na úplne iné strategické potreby firmy.",
+                when: "Využívané pri <b>strategickom rozhodovaní</b>, kedy firma zakladá Projektovú Kanceláriu (PMO) a potrebuje stanoviť interné pravidlá vývoja.",
+                pros: "• Umožňuje firmám vytvoriť si hybridný model riadenia.<br>• Pomáha vybrať správny prístup pre konkrétny typ projektu.",
+                cons: "• Slepé kombinovanie bez hlbšieho pochopenia môže vytvoriť chaos v kompetenciách.",
                 steps: [
-                    { title: "PRINCE2 (Rámec)", desc: "Odpovedá na to 'ČO, KEDY a KTO'. Určuje presné fázy, brány a procesné zodpovednosti." }, 
-                    { title: "PMBOK (Nástroje)", desc: "Odpovedá na to 'AKO'. Poskytuje presné vzorce, postupy a teóriu na riešenie problémov." }, 
+                    { title: "PRINCE2 (Rámec)", desc: "Odpovedá na to 'ČO, KEDY a KTO'. Určuje presné fázy, brány a procesné zodpovednosti." },
+                    { title: "PMBOK (Nástroje)", desc: "Odpovedá na to 'AKO'. Poskytuje presné vzorce, postupy a teóriu na riešenie problémov." },
                     { title: "IPMA (Ľudia)", desc: "Hodnotí 'KTO' projekt vedie. Zameriava sa na psychológiu, stres a motiváciu tímu." }
-                ], 
+                ],
                 visualHtml: `<div class='flex flex-col items-center gap-2'><i class='fa-solid fa-scale-balanced text-4xl text-slate-400 mb-4'></i><div class='flex gap-4'><div class='bg-purple-800/80 p-2 rounded-xl border-2 border-purple-500 text-center w-24 shadow-lg'><span class='block text-xs font-bold text-white'>PRINCE2</span><span class='text-[10px] text-purple-300'>Rieši Procesy</span></div><div class='bg-blue-800/80 p-2 rounded-xl border-2 border-blue-500 text-center w-24 shadow-lg'><span class='block text-xs font-bold text-white'>PMBOK</span><span class='text-[10px] text-blue-300'>Nástroje a Teória</span></div><div class='bg-emerald-800/80 p-2 rounded-xl border-2 border-emerald-500 text-center w-24 shadow-lg'><span class='block text-xs font-bold text-white'>IPMA</span><span class='text-[10px] text-emerald-300'>Schopní Ľudia</span></div></div></div>`
             },
             {
-                id: "cpm", 
-                category: "tools", 
-                categoryName: "Nástroj / Technika", 
-                title: "CPM (Critical Path Method)", 
-                icon: "fa-route", 
-                color: "pink", 
-                structureType: "sequence", 
-                what: "Analytická sieťová metóda. Využíva pevne dané časy úkonov, aby matematicky určila najkratší možný teoretický harmonogram dokončenia celého projektu.", 
-                when: "Základ pri projektoch s <b>hrozbou časových sankcií</b>, kde sa úkony priamo technologicky prelínajú (napr. stavebníctvo, inštalácie).", 
-                pros: "• Jasne ukáže, ktoré úlohy sú kľúčové. Akékoľvek zdržanie úlohy na kritickej ceste okamžite zdrží dátum ukončenia celého projektu.", 
-                cons: "• Je deterministická – nedokáže pracovať s neistotou. Spolieha sa na to, že počiatočný časový odhad bol 100% presný.", 
+                id: "cpm", category: "tools", categoryName: "Nástroj / Technika", title: "CPM (Critical Path Method)", icon: "fa-route", color: "pink", structureType: "sequence",
+                what: "Analytická sieťová metóda. Využíva pevne dané časy úkonov, aby matematicky určila najkratší možný teoretický harmonogram dokončenia celého projektu.",
+                when: "Základ pri projektoch s <b>hrozbou časových sankcií</b>, kde sa úkony priamo technologicky prelínajú (napr. stavebníctvo, inštalácie).",
+                pros: "• Jasne ukáže, ktoré úlohy nesmú v žiadnom prípade meškať.<br>• Umožňuje optimalizovať harmonogram prác.",
+                cons: "• Neberie do úvahy neistotu a náhodné faktory.<br>• Vyžaduje veľmi presné vstupné odhady času.",
                 steps: [
-                    { title: "Tvorba WBS", desc: "Vytvorenie zoznamu všetkých čiastkových prác." }, 
-                    { title: "Sieťový graf", desc: "Aktivitám sa priradí trvanie a prepoja sa logickými šípkami (závislosťami)." }, 
-                    { title: "Výpočty (Passes)", desc: "Dopredným a spätným výpočtom sa nájdu časy najskorších a najneskorších možných štartov." }, 
+                    { title: "Tvorba WBS", desc: "Vytvorenie zoznamu všetkých čiastkových prác." },
+                    { title: "Sieťový graf", desc: "Aktivitám sa priradí trvanie a prepoja sa logickými šípkami (závislosťami)." },
+                    { title: "Výpočty (Passes)", desc: "Dopredným a spätným výpočtom sa nájdu časy najskorších a najneskorších možných štartov." },
                     { title: "Kritická Cesta", desc: "Zvýrazní sa cesta tých úloh, ktorých <b>časová rezerva (Float) je presne Nula</b>." }
-                ], 
+                ],
                 visualHtml: `<div class='relative w-[320px] h-32 flex items-center justify-between text-xs font-bold text-white px-8'><svg class='absolute inset-0 w-full h-full' style='z-index:0;'><line x1='20%' y1='50%' x2='50%' y2='20%' stroke='#475569' stroke-width='2'></line><line x1='20%' y1='50%' x2='50%' y2='80%' stroke='#f43f5e' stroke-width='4'></line><line x1='50%' y1='20%' x2='80%' y2='50%' stroke='#475569' stroke-width='2'></line><line x1='50%' y1='80%' x2='80%' y2='50%' stroke='#f43f5e' stroke-width='4'></line></svg><div class='bg-slate-700 w-10 h-10 rounded-full flex items-center justify-center z-10 border-2 border-slate-400'>1</div><div class='flex flex-col h-full justify-between py-2 z-10'><div class='bg-slate-700 w-10 h-10 rounded-full flex items-center justify-center border-2 border-slate-400 relative'><span class='absolute -top-6 text-[8px] text-slate-400 bg-dark px-1 rounded whitespace-nowrap'>Rezerva = 5d</span>2</div><div class='bg-rose-600 w-10 h-10 rounded-full flex items-center justify-center border-2 border-rose-400 ring-4 ring-rose-500/30 relative'><span class='absolute -bottom-6 text-[8px] text-rose-400 bg-dark px-1 rounded whitespace-nowrap'>Rezerva = 0d (Kritická)</span>3</div></div><div class='bg-rose-600 w-10 h-10 rounded-full flex items-center justify-center z-10 border-2 border-rose-400'>4</div></div>`
             },
             {
-                id: "pert", 
-                category: "tools", 
-                categoryName: "Nástroj / Technika", 
-                title: "PERT", 
-                icon: "fa-chart-pie", 
-                color: "pink", 
-                structureType: "composition", 
-                what: "Pokročilá analyticko-štatistická kalkulačná metóda (sestra CPM). Vznikla v USA vojenstve pre prípady, kedy si manažéri pri inovatívnych projektoch vôbec nie sú istí časovými odhadmi.", 
-                when: "Technologické startupy, R&D výskum a <b>vývoj úplne neprebádaných modulov</b>, kde chýbajú historické dáta a tímy v podstate iba 'tipujú'.", 
-                pros: "• Masívne znižuje riziko fatálneho meškania, pretože do odhadov započítava realistickú mieru neistoty (štatistickú odchýlku).", 
-                cons: "• Rozpis stoviek úloh do trojitých odhadov zaberie obrovské množstvo času a analytického úsilia.", 
+                id: "pert", category: "tools", categoryName: "Nástroj / Technika", title: "PERT", icon: "fa-chart-pie", color: "pink", structureType: "composition",
+                what: "Pokročilá analyticko-štatistická kalkulačná metóda (sestra CPM). Vznikla v USA vojenstve pre prípady, kedy si manažéri pri inovatívnych projektoch vôbec nie sú istí časovými odhadmi.",
+                when: "Technologické startupy, R&D výskum a <b>vývoj úplne neprebádaných modulov</b>, kde chýbajú historické dáta a tímy v podstate iba 'tipujú'.",
+                pros: "• Poskytuje realistickejší pohľad na trvanie projektu pri neistote.<br>• Umožňuje vypočítať pravdepodobnosť dodania v určitom termíne.",
+                cons: "• Príprava troch odhadov pre každú úlohu je časovo náročná.<br>• Metóda môže byť až príliš optimistická, ak sú odhady neobjektívne.",
                 steps: [
-                    { title: "Optimistický (O)", desc: "Odhad času, ak všetko na projekte pôjde dokonale na 100%." }, 
-                    { title: "Pravdepodobný (M)", desc: "Najbežnejší scenár pri započítaní štandardných pracovných komplikácií." }, 
-                    { title: "Pesimistický (P)", desc: "Najhorší scenár, kde sa pokazí všetko, čo sa môže." }, 
+                    { title: "Optimistický (O)", desc: "Odhad času, ak všetko na projekte pôjde dokonale na 100%." },
+                    { title: "Pravdepodobný (M)", desc: "Najbežnejší scenár pri započítaní štandardných pracovných komplikácií." },
+                    { title: "Pesimistický (P)", desc: "Najhorší scenár, kde sa pokazí všetko, čo sa môže." },
                     { title: "Vzorec (TE)", desc: "Očakávaný čas sa vypočíta ako priemer: (O + 4xM + P) / 6." }
-                ], 
+                ],
                 visualHtml: `<div class='bg-slate-800 p-6 rounded-xl border border-pink-500/30 w-full max-w-sm text-center shadow-lg'><div class='text-pink-400 font-bold mb-4 border-b border-slate-700 pb-2 text-lg'>Vzorec Odhadu (PERT)</div><div class='text-white text-2xl font-mono'><span class='text-emerald-400'>O</span> + 4<span class='text-blue-400'>M</span> + <span class='text-rose-400'>P</span></div><div class='border-t-2 border-white w-32 mx-auto my-2'></div><div class='text-white text-xl font-mono mb-4'>6</div><div class='text-[10px] text-slate-400 flex justify-between px-4'><span class='text-emerald-400'>Optimistický</span><span class='text-blue-400'>Pravdepodobný</span><span class='text-rose-400'>Pesimistický</span></div></div>`
             },
             {
-                id: "gantt", 
-                category: "tools", 
-                categoryName: "Nástroj / Technika", 
-                title: "Ganttov diagram", 
-                icon: "fa-list-check", 
-                color: "pink", 
-                structureType: "composition", 
-                what: "Základný a v priemysle globálne preferovaný nástroj – stĺpcový graf na formálnu, plne vizuálnu reprezentáciu stanoveného harmonogramu prác a jeho plynutia v čase.", 
-                when: "Absolútny štandard a kostra všetkých plánovacích platforiem (<b>MS Project, JIRA, Asana</b>) pre operatívne manažérske status-reporty.", 
-                pros: "• Maximálna vizuálna zrozumiteľnosť i pre ne-technických investorov. Jedným pohľadom vidíte, čo práve beží a či meškáte.", 
-                cons: "• V rozsiahlom Enterprise plánovaní (nad 1 000 úloh) diagram často vizuálne skolabuje do neprehľadnej guče poprepájaných šípok ('Spaghetti efekt').", 
+                id: "gantt", category: "tools", categoryName: "Nástroj / Technika", title: "Ganttov diagram", icon: "fa-list-check", color: "pink", structureType: "composition",
+                what: "Základný a v priemysle globálne preferovaný nástroj – stĺpcový graf na formálnu, plne vizuálnu reprezentáciu stanoveného harmonogramu prác a jeho plynutia v čase.",
+                when: "Absolútny štandard a kostra všetkých plánovacích platforiem (<b>MS Project, JIRA, Asana</b>) pre operatívne manažérske status-reporty.",
+                pros: "• Vynikajúca vizuálna zrozumiteľnosť pre všetky strany.<br>• Jednoduché sledovanie postupu prác voči času.",
+                cons: "• Pri veľkom počte úloh sa diagram stáva neprehľadným.<br>• Vyžaduje neustálu aktualizáciu, inak rýchlo zastará.",
                 steps: [
-                    { title: "Zoznam úloh (Os Y)", desc: "Vertikálne zobrazená rozkategorizovaná štruktúra prác (WBS)." }, 
-                    { title: "Časová os (Os X)", desc: "Horizontálne plynie čas v dňoch/týždňoch/mesiacoch." }, 
-                    { title: "Farebné pruhy", desc: "Zobrazujú začiatok, koniec a dĺžku trvania konkrétnej úlohy." }, 
+                    { title: "Zoznam úloh (Os Y)", desc: "Vertikálne zobrazená rozkategorizovaná štruktúra prác (WBS)." },
+                    { title: "Časová os (Os X)", desc: "Horizontálne plynie čas v dňoch/týždňoch/mesiacoch." },
+                    { title: "Farebné pruhy", desc: "Zobrazujú začiatok, koniec a dĺžku trvania konkrétnej úlohy." },
                     { title: "Závislosti", desc: "Spojovacie šípky určujú, že jedna úloha môže začať až po konci druhej." }
-                ], 
+                ],
                 visualHtml: `<div class='w-[350px] bg-slate-800 p-4 rounded-xl border border-slate-600 font-mono text-xs shadow-xl'><div class='flex text-slate-400 border-b border-slate-700 pb-2 mb-3'><div class='w-24 font-sans font-bold'>WBS Úlohy</div><div class='flex-1 flex justify-between px-2'><span>Q1</span><span>Q2</span><span>Q3</span><span>Q4</span></div></div><div class='flex items-center mb-3 relative'><div class='w-24 text-slate-300 truncate'>Dizajn DB</div><div class='flex-1 grid grid-cols-4 gap-1'><div class='bg-pink-500 h-5 rounded shadow col-span-1'></div><div></div><div></div><div></div></div><div class='absolute right-[70%] top-2 w-[10px] h-[30px] border-l-2 border-b-2 border-slate-400 rounded-bl-sm'></div></div><div class='flex items-center mb-3'><div class='w-24 text-slate-300 truncate'>API a Kód</div><div class='flex-1 grid grid-cols-4 gap-1'><div></div><div class='bg-blue-500 h-5 rounded shadow col-span-2'></div><div></div></div></div><div class='flex items-center'><div class='w-24 text-slate-300 truncate'>Systém. Test</div><div class='flex-1 grid grid-cols-4 gap-1'><div></div><div></div><div></div><div class='bg-emerald-500 h-5 rounded shadow col-span-1'></div></div></div></div>`
             },
             {
-                id: "uml", 
-                category: "tools", 
-                categoryName: "Jazyk na modelovanie", 
-                title: "UML (Unified Modeling Language)", 
-                icon: "fa-diagram-project", 
-                color: "pink", 
-                structureType: "composition", 
-                what: "Svetový štandardizovaný grafický architektonický jazyk. Funguje ako univerzálny technický 'stavebný plán' softvéru pre vizuálne modelovanie objektovo-orientovaných systémov.", 
-                when: "Kriticky nevyhnutná opora analytikov pri tvorbe dizajn-vzorov pre <b>objektovo-orientované platformy (Java, C#)</b> pred začatím programovania.", 
-                pros: "• Odstraňuje jazykovú bariéru. Správne nakreslený UML graf tried okamžite pochopí programátor v Európe rovnako ako v Indii.", 
-                cons: "• V moderných agilných tímoch je snaha tvoriť menej striktnej architektúry. Pre netechnického klienta vyzerajú diagramy ako nezrozumiteľný matrix.", 
+                id: "uml", category: "tools", categoryName: "Jazyk na modelovanie", title: "UML (Unified Modeling Language)", icon: "fa-diagram-project", color: "pink", structureType: "composition",
+                what: "Svetový štandardizovaný grafický architektonický jazyk. Funguje ako univerzálny technický 'stavebný plán' softvéru pre vizuálne modelovanie objektovo-orientovaných systémov.",
+                when: "Kriticky nevyhnutná opora analytikov pri tvorbe dizajn-vzorov pre <b>objektovo-orientované platformy (Java, C#)</b> pred začatím programovania.",
+                pros: "• Odstraňuje komunikačnú bariéru medzi analytikmi a programátormi.<br>• Poskytuje striktný a presný formát popisu architektúry.",
+                cons: "• Príliš detailné modely sa ťažko udržiavajú v súlade s kódom.<br>• Vyžaduje dlhšiu dobu učenia sa špecifickej notácie.",
                 steps: [
-                    { title: "Štrukturálne diagramy", desc: "Zobrazujú fyzické, statické zloženie kódu a entít (napr. Diagram tried - Class Diagram, Diagram komponentov)." }, 
+                    { title: "Štrukturálne diagramy", desc: "Zobrazujú fyzické, statické zloženie kódu a entít (napr. Diagram tried - Class Diagram, Diagram komponentov)." },
                     { title: "Behaviorálne diagramy", desc: "Popisujú dynamiku, interakcie používateľa a chody informácií v čase (napr. Use-Case diagramy, Sekvenčné diagramy)." }
-                ], 
+                ],
                 visualHtml: `<div class='flex gap-8 items-center font-mono text-xs'><div class='bg-[#fff8dc] text-slate-900 border-2 border-slate-800 w-40 rounded shadow-lg overflow-hidden'><div class='bg-amber-200 border-b-2 border-slate-800 p-2 text-center font-bold'>Používateľ</div><div class='border-b-2 border-slate-800 p-2 text-slate-700 leading-relaxed'><span class='text-rose-600 font-bold'>-</span> id: int<br><span class='text-rose-600 font-bold'>-</span> meno: String</div><div class='p-2 text-blue-800 leading-relaxed'><span class='text-emerald-600 font-bold'>+</span> login()<br><span class='text-emerald-600 font-bold'>+</span> logout()</div></div><div class='relative flex items-center'><div class='absolute -top-4 w-full text-center text-[8px] text-white opacity-50'>Dedičnosť</div><div class='w-16 h-0.5 bg-white'></div><i class='fa-regular fa-caret-right text-white absolute -right-3 text-2xl scale-y-150'></i></div><div class='bg-[#fff8dc] text-slate-900 border-2 border-slate-800 w-40 rounded shadow-lg overflow-hidden opacity-80'><div class='bg-amber-200 border-b-2 border-slate-800 p-2 text-center font-bold'>Zákazník</div><div class='p-2 text-slate-700 leading-relaxed'><span class='text-rose-600 font-bold'>-</span> kredit: float</div><div class='p-2 text-blue-800 leading-relaxed'><span class='text-emerald-600 font-bold'>+</span> pridajKredit()</div></div></div>`
             },
             {
-                id: "bpmn", 
-                category: "tools", 
-                categoryName: "Jazyk na modelovanie", 
-                title: "BPMN / BPM", 
-                icon: "fa-project-diagram", 
-                color: "pink", 
-                structureType: "composition", 
-                what: "Business Process Model and Notation je medzinárodne vyvíjaná notácia pre elegantnú sieťovú grafickú vizualizáciu firemných procesov.", 
-                when: "Pri plošnej IT diagnostike firmy a hĺbkových <b>optimalizáciách korporátnych procesov</b> (ako prebieha schvaľovanie úverov, prijímanie zamestnancov atď.).", 
-                pros: "• Intuitívne pre biznis analytikov (ihneď vidia neefektivitu podniku), no zároveň natoľko exaktné, že sa to dá vo formáte XML napojiť priamo do enginov aplikácií.", 
-                cons: "• Príliš zložité modely môžu byť pre bežných zamestnancov ťažko čitateľné kvôli veľkému množstvu špecifických ikon.", 
+                id: "bpmn", category: "tools", categoryName: "Jazyk na modelovanie", title: "BPMN / BPM", icon: "fa-project-diagram", color: "pink", structureType: "composition",
+                what: "Business Process Model and Notation je medzinárodne vyvíjaná notácia pre elegantnú sieťovú grafickú vizualizáciu firemných procesov.",
+                when: "Pri plošnej IT diagnostike firmy a hĺbkových <b>optimalizáciách korporátnych procesov</b> (ako prebieha schvaľovanie úverov, prijímanie zamestnancov atď.).",
+                pros: "• Intuitívne pochopiteľné aj pre biznis manažérov.<br>• Možnosť automatizácie procesov vďaka XML exportu.",
+                cons: "• Prílišné detaily v procese môžu viesť k nečitateľnosti grafu.<br>• Vyžaduje súčinnosť všetkých oddelení firmy.",
                 steps: [
-                    { title: "Bazény a Dráhy (Pools/Lanes)", desc: "Rozdeľujú plátno a jasne definujú, KTORÉ oddelenie (Zákazník, Sklad) je za čo zodpovedné." }, 
-                    { title: "Udalosti (Kruhy)", desc: "Zachytávajú prijatie podnetu (Štart procesu) a Koniec." }, 
-                    { title: "Aktivity (Obdĺžniky)", desc: "Fyzická alebo digitálna pracovná úloha (Task), ktorú treba vykonať." }, 
+                    { title: "Bazény a Dráhy (Pools/Lanes)", desc: "Rozdeľujú plátno a jasne definujú, KTORÉ oddelenie (Zákazník, Sklad) je za čo zodpovedné." },
+                    { title: "Udalosti (Kruhy)", desc: "Zachytávajú prijatie podnetu (Štart procesu) a Koniec." },
+                    { title: "Aktivity (Obdĺžniky)", desc: "Fyzická alebo digitálna pracovná úloha (Task), ktorú treba vykonať." },
                     { title: "Brány (Gateways)", desc: "Žlté kosoštvorce riešiace rozhodnutia a vetvenie toku (podmienky IF/ELSE)." }
-                ], 
+                ],
                 visualHtml: `<div class='border-2 border-slate-600 rounded-lg w-[380px] bg-slate-800 flex overflow-hidden'><div class='w-8 bg-slate-700 border-r border-slate-600 flex items-center justify-center'><span class='text-[10px] text-slate-300 font-bold -rotate-90 whitespace-nowrap tracking-widest'>Proces Vybavenia</span></div><div class='flex-1 flex flex-col'><div class='flex-1 border-b border-slate-600 p-2 flex items-center gap-3 relative'><div class='absolute -left-0 w-full h-full bg-slate-900/50 z-0'></div><span class='text-[10px] text-slate-400 absolute top-1 left-2 z-10'>Zákazník</span><div class='w-6 h-6 rounded-full border-2 border-emerald-500 bg-emerald-500/20 z-10 shrink-0 flex items-center justify-center'><div class='w-2 h-2 rounded-full bg-emerald-400'></div></div><i class='fa-solid fa-arrow-right text-slate-500 z-10'></i><div class='bg-blue-100 border border-blue-400 text-blue-900 text-[10px] px-2 py-1 rounded-md z-10 shadow-sm'>Odošle <br>Objednávku</div><i class='fa-solid fa-arrow-turn-down text-slate-500 z-10 ml-2'></i></div><div class='flex-1 p-2 flex items-center gap-3 relative justify-end'><span class='text-[10px] text-slate-400 absolute top-1 left-2 z-10'>Sklad</span><div class='w-8 h-8 rotate-45 border-2 border-yellow-500 bg-yellow-500/20 z-10 flex items-center justify-center shrink-0'><i class='fa-solid fa-xmark -rotate-45 text-yellow-500 text-[10px]'></i></div><i class='fa-solid fa-arrow-right text-slate-500 z-10'></i><div class='bg-blue-100 border border-blue-400 text-blue-900 text-[10px] px-2 py-1 rounded-md z-10 shadow-sm'>Odošle <br>Tovar</div><i class='fa-solid fa-arrow-right text-slate-500 z-10'></i><div class='w-6 h-6 rounded-full border-4 border-red-500 bg-red-500/20 z-10 shrink-0'></div></div></div></div>`
             },
             {
-                id: "rea", 
-                category: "tools", 
-                categoryName: "Modelovanie", 
-                title: "REA", 
-                icon: "fa-coins", 
-                color: "pink", 
-                structureType: "composition", 
-                what: "Pokročilý databázový ontologický model. Odmieta tradičné abstraktné účtovníctvo (koncept 'Má dať/Dal') a prepisuje ukladanie dát so zameraním na reálne, fyzické hospodárske operácie.", 
-                when: "Kľúčové pri tvorbe architektúry pre <b>masívne podnikové databázy, účtovné platformy a systémy ERP</b> (Enterprise Resource Planning).", 
-                pros: "• Úplne odstraňuje dátovú duplicitu klasických účtovných denníkov. Udržuje len jeden čistý faktický repozitár ('Čo a kde kedy odišlo').<br>• IT systém dokáže vygenerovať akýkoľvek report na kliknutie.", 
-                cons: "• Vyžaduje masívnu premenu myslenia od klasických účtovníkov, čo pri implementácii vo firmách naráža na obrovský odpor.", 
+                id: "rea", category: "tools", categoryName: "Modelovanie", title: "REA", icon: "fa-coins", color: "pink", structureType: "composition",
+                what: "Pokročil databázový ontologický model. Odmieta tradičné abstraktné účtovníctvo (koncept 'Má dať/Dal') a prepisuje ukladanie dát so zameraním na reálne, fyzické hospodárske operácie.",
+                when: "Kľúčové pri tvorbe architektúry pre <b>masívne podnikové databázy, účtovné platformy a systémy ERP</b> (Enterprise Resource Planning).",
+                pros: "• Úplne odstraňuje dátovú duplicitu v databázach.<br>• Umožňuje generovať presné a čisté hospodárske reporty.",
+                cons: "• Náročné na preučenie klasických účtovníkov.<br>• Implementácia v starších firmách naráža na odpor k zmene.",
                 steps: [
-                    { title: "R (Resources / Zdroje)", desc: "Určenie fyzického aktíva, ktoré podlieha zmene množstva (peniaze, skladový tovar)." }, 
-                    { title: "E (Events / Udalosti)", desc: "Samotná hospodárska operácia, ktorá mení zdroje (napr. uskutočnenie predaja)." }, 
+                    { title: "R (Resources / Zdroje)", desc: "Určenie fyzického aktíva, ktoré podlieha zmene množstva (peniaze, skladový tovar)." },
+                    { title: "E (Events / Udalosti)", desc: "Samotná hospodárska operácia, ktorá mení zdroje (napr. uskutočnenie predaja)." },
                     { title: "A (Agents / Agenti)", desc: "Subjekty, ktoré sa zúčastnili udalosti (interný predavač a externý zákazník)." }
-                ], 
+                ],
                 visualHtml: `<div class='flex items-center gap-6'><div class='bg-blue-900/50 border-2 border-blue-400 p-4 rounded-xl text-center shadow-[0_0_15px_rgba(59,130,246,0.3)]'><i class='fa-solid fa-boxes-stacked text-2xl text-blue-400 mb-1'></i><p class='text-[10px] font-bold text-white'>ZDROJ<br>(Resource)</p></div><div class='h-1 w-8 bg-slate-500 relative'><i class='fa-solid fa-caret-left absolute -left-1 -top-1.5 text-slate-400'></i></div><div class='bg-emerald-900/50 border-2 border-emerald-400 p-4 rounded-full text-center shadow-[0_0_15px_rgba(16,185,129,0.3)] scale-110 relative z-10'><i class='fa-solid fa-bolt text-3xl text-emerald-400 mb-1'></i><p class='text-[10px] font-bold text-white'>UDALOSŤ<br>(Event)</p></div><div class='h-1 w-8 bg-slate-500 relative'><i class='fa-solid fa-caret-right absolute -right-1 -top-1.5 text-slate-400'></i></div><div class='bg-purple-900/50 border-2 border-purple-400 p-4 rounded-xl text-center shadow-[0_0_15px_rgba(168,85,247,0.3)]'><i class='fa-solid fa-users text-2xl text-purple-400 mb-1'></i><p class='text-[10px] font-bold text-white'>AGENT<br>(Agent)</p></div></div>`
             },
             {
-                id: "idef0", 
-                category: "tools", 
-                categoryName: "Modelovanie", 
-                title: "IDEF0", 
-                icon: "fa-box", 
-                color: "pink", 
-                structureType: "composition", 
-                what: "Exaktná analytická metóda dekompozičného hierarchického modelovania. Vizualizuje striktne ČO sa v systéme robí, akým vplyvom podlieha a s akými prostriedkami pracuje.", 
-                when: "Nasádza sa pri hĺbkovom modelovaní postupov <b>v obrovských vládnych, strojárskych a vojenských inštitúciách</b> (Business Process Re-engineering).", 
-                pros: "• Neoblomná inžinierska presnosť. Vďaka hierarchii okamžite odhalí stratu suroviny či prehliadnuté zákonné nariadenie v toku firmy.", 
-                cons: "• Veľmi rigidný formát bez reálneho posudzovania času a vetvenia podmienok. Pre netechnikov pôsobí odstrašujúco byrokraticky.", 
+                id: "idef0", category: "tools", categoryName: "Modelovanie", title: "IDEF0", icon: "fa-box", color: "pink", structureType: "composition",
+                what: "Exaktná analytická metóda dekompozičného hierarchického modelovania. Vizualizuje striktne ČO sa v systéme robí, akým vplyvom podlieha a s akými prostriedkami pracuje.",
+                when: "Nasádza sa pri hĺbkovom modelovaní postupov <b>v obrovských vládnych, strojárskych a vojenských inštitúciách</b> (Business Process Re-engineering).",
+                pros: "• Maximálna inžinierska presnosť popisu procesu.<br>• Jednoznačne definuje vstupy, výstupy a riadiace mechanizmy.",
+                cons: "• Veľmi rigidný formát, neobsahuje informácie o čase.<br>• Náročné na čítanie pre netechnický personál.",
                 steps: [
-                    { title: "Input (Vstup zľava)", desc: "Materiálne alebo dátové údaje vstupujúce do aktivity (napr. surový plech)." }, 
-                    { title: "Control (Zhora)", desc: "Riadiace nariadenia a obmedzenia, ktoré regulujú výrobu (napr. ISO normy)." }, 
-                    { title: "Output (Výstup doprava)", desc: "Výsledný produkt / dáta transformované procesom v obdĺžniku." }, 
+                    { title: "Input (Vstup zľava)", desc: "Materiálne alebo dátové údaje vstupujúce do aktivity (napr. surový plech)." },
+                    { title: "Control (Zhora)", desc: "Riadiace nariadenia and obmedzenia, ktoré regulujú výrobu (napr. ISO normy)." },
+                    { title: "Output (Výstup doprava)", desc: "Výsledný produkt / dáta transformované procesom v obdĺžniku." },
                     { title: "Mechanism (Zdola)", desc: "Personál, stroje alebo softvér, ktoré samotnú aktivitu vykonávajú." }
-                ], 
+                ],
                 visualHtml: `<div class='relative w-64 h-48 flex items-center justify-center font-bold text-xs uppercase m-6'><div class='w-32 h-20 bg-pink-600/20 border-2 border-pink-500 flex items-center justify-center text-pink-300 text-center rounded shadow-lg z-10'>Názov Aktivity<br>(Sloveso)</div><div class='absolute left-0 top-1/2 -translate-y-1/2 flex items-center w-16'><span class='absolute -top-4 text-[10px] text-blue-400'>Vstup (I)</span><div class='h-1 w-full bg-blue-500'></div><i class='fa-solid fa-caret-right text-blue-500 -ml-1 text-lg'></i></div><div class='absolute right-0 top-1/2 -translate-y-1/2 flex items-center w-16'><span class='absolute -top-4 right-0 text-[10px] text-emerald-400'>Výstup (O)</span><div class='h-1 w-full bg-emerald-500'></div><i class='fa-solid fa-caret-right text-emerald-500 -ml-1 text-lg'></i></div><div class='absolute top-0 left-1/2 -translate-x-1/2 flex flex-col items-center h-14'><span class='text-[10px] text-yellow-400 mb-1'>Riadenie (C)</span><div class='w-1 h-full bg-yellow-500'></div><i class='fa-solid fa-caret-down text-yellow-500 -mt-2 text-lg'></i></div><div class='absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center h-14'><i class='fa-solid fa-caret-up text-purple-500 -mb-2 text-lg z-20'></i><div class='w-1 h-full bg-purple-500 z-10'></div><span class='text-[10px] text-purple-400 mt-1 whitespace-nowrap text-center'>Mechanizmus<br>(M)</span></div></div>`
             }
         ];
@@ -840,8 +692,13 @@
             document.getElementById('modal-category').innerText = item.categoryName;
             document.getElementById('modal-what').innerHTML = item.what;
             document.getElementById('modal-when').innerHTML = item.when;
-            document.getElementById('modal-pros').innerHTML = item.pros;
-            document.getElementById('modal-cons').innerHTML = item.cons;
+            
+            // Format Pros and Cons with icons
+            const prosHtml = item.pros.split('<br>').map(line => `<div class="pros-item"><i class="fa-solid fa-check-circle"></i><span>${line.replace('•', '').trim()}</span></div>`).join('');
+            const consHtml = item.cons.split('<br>').map(line => `<div class="cons-item"><i class="fa-solid fa-triangle-exclamation"></i><span>${line.replace('•', '').trim()}</span></div>`).join('');
+            
+            document.getElementById('modal-pros').innerHTML = prosHtml;
+            document.getElementById('modal-cons').innerHTML = consHtml;
             
             const phasesContainer = document.getElementById('modal-phases-container');
             if (item.steps && item.steps.length > 0) {
@@ -855,8 +712,8 @@
                              <div class="relative border-l-2 border-blue-500/30 ml-4 pl-6 space-y-6 mb-8">`;
                     item.steps.forEach((step, index) => {
                         html += `
-                        <div class="relative">
-                            <div class="absolute -left-[41px] top-0 w-8 h-8 bg-slate-800 rounded-full border-2 border-blue-500 flex items-center justify-center text-blue-400 font-bold text-sm shadow-[0_0_10px_rgba(59,130,246,0.3)]">${index + 1}</div>
+                        <div class="relative group">
+                            <div class="absolute -left-[41px] top-0 w-8 h-8 bg-slate-800 rounded-full border-2 border-blue-500 flex items-center justify-center text-blue-400 font-bold text-sm shadow-[0_0_10px_rgba(59,130,246,0.3)] group-hover:bg-blue-600 group-hover:text-white transition-colors">${index + 1}</div>
                             <h4 class="text-white font-bold text-md mb-1">${step.title}</h4>
                             <p class="text-slate-400 text-sm leading-relaxed">${step.desc}</p>
                         </div>`;
@@ -923,71 +780,197 @@
 
         /* --- DÁTA OTÁZOK --- */
         const dbOtazky = [
-            { id: 1, cat: "Základy", icon: "fa-rocket", color: "#3b82f6", q: "Čo je projekt a aké má hlavné charakteristiky?", a: "Projekt je <span class='hl-blue'>dočasná</span>, <span class='hl-purple'>jedinečná</span> a <span class='hl-green'>cielená</span> činnosť.<br><br><b class='block mb-2 text-gray-800'>Hlavné znaky:</b><ul class='list-disc pl-5 space-y-1.5 text-sm'><li>Jasný cieľ, začiatok a koniec</li><li><span class='hl-red'>Obmedzené zdroje</span> (čas, peniaze, ľudia)</li><li>Prítomnosť rizika a neistoty</li></ul>" },
-            { id: 2, cat: "Základy", icon: "fa-not-equal", color: "#3b82f6", q: "Aký je rozdiel medzi projektom a bežnou operatívnou činnosťou?", a: "<div class='space-y-3 text-sm'><div class='bg-blue-50/50 p-3 rounded-lg border-l-4 border-blue-500'><b class='text-blue-700 block mb-1'>Projekt</b>Je <span class='hl-blue'>jednorazový</span> a inovatívny. Jeho cieľom je <span class='hl-green'>zmeniť</span> súčasný stav.</div><div class='bg-orange-50/50 p-3 rounded-lg border-l-4 border-orange-500'><b class='text-orange-700 block mb-1'>Operatíva</b>Je <span class='hl-orange'>opakovaná</span> a rutinná. Jej cieľom je <span class='hl-purple'>udržiavať</span> bežnú prevádzku.</div></div>" },
-            { id: 3, cat: "Základy", icon: "fa-bars-progress", color: "#3b82f6", q: "Čo znamená pojem riadenie projektu (project management)?", a: "<b class='block mb-2 text-gray-800'>Aplikácia 4 manažérskych funkcií:</b><ol class='list-decimal pl-5 space-y-2 text-sm'><li><span class='hl-orange'>Plánovanie</span> (čo, kedy, za koľko)</li><li><span class='hl-blue'>Organizovanie</span> (kto to urobí)</li><li><span class='hl-green'>Vedenie</span> (motivácia tímu)</li><li><span class='hl-red'>Kontrola</span> (porovnanie plánu a reality)</li></ol>" },
-            { id: 4, cat: "Základy", icon: "fa-key", color: "#3b82f6", q: "Aké sú kľúčové prvky riadenia projektu?", a: "<b class='block mb-2 text-gray-800'>Tzv. Magický trojuholník (obmedzenia):</b><ul class='list-disc pl-5 space-y-2 text-sm'><li><span class='hl-purple'>Rozsah</span> (Scope)</li><li><span class='hl-red'>Čas</span> (Time)</li><li><span class='hl-orange'>Náklady</span> (Cost)</li><li><span class='hl-green'>Kvalita</span> (Quality)</li></ul>" },
-            { id: 5, cat: "Fázy a Životný cyklus", icon: "fa-rotate", color: "#f97316", q: "Aké sú hlavné fázy životného cyklu projektu?", a: "<b class='block mb-2 text-gray-800'>5 štandardných fáz:</b><ol class='list-decimal pl-5 space-y-1.5 text-sm'><li><span class='hl-blue'>Iniciácia</span> (Nápad a štúdia)</li><li><span class='hl-orange'>Plánovanie</span> (Detailný rozpis)</li><li><span class='hl-green'>Realizácia</span> (Samotná práca)</li><li><span class='hl-purple'>Monitorovanie a kontrola</span> (Priebežne)</li><li><span class='hl-red'>Ukončenie</span> (Odovzdanie)</li></ol>" },
-            { id: 6, cat: "Fázy a Životný cyklus", icon: "fa-seedling", color: "#f97316", q: "Čo sa deje vo fáze iniciácie projektu?", a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Formulujú sa požiadavky a hlavné ciele.</li><li>Posudzuje sa <span class='hl-green'>Uskutočniteľnosť (Feasibility)</span>.</li><li>Analyzujú sa prínosy vs. riziká.</li><li>Padne <span class='hl-red font-bold'>kľúčové rozhodnutie (Go/No-Go)</span>, či projekt vôbec spustiť.</li></ul>" },
-            { id: 7, cat: "Fázy a Životný cyklus", icon: "fa-map", color: "#f97316", q: "Čo zahŕňa fáza plánovania projektu?", a: "<b class='block mb-2 text-gray-800'>Vytvára sa podrobný plán:</b><ul class='list-disc pl-5 space-y-2 text-sm'><li><span class='hl-blue'>WBS (Rozpis prác)</span> – dekompozícia úloh</li><li><span class='hl-red'>Časový harmonogram</span> a <span class='hl-green'>Milníky</span></li><li>Rozpočet a zdroje</li><li>Plán komunikácie a <span class='hl-orange'>riadenia rizík</span></li></ul>" },
-            { id: 8, cat: "Fázy a Životný cyklus", icon: "fa-hammer", color: "#f97316", q: "Aké činnosti prebiehajú počas realizácie projektu?", a: "<b class='block mb-2 text-gray-800'>Samotná tvorba riešenia:</b><ul class='list-disc pl-5 space-y-2 text-sm'><li>Programovanie a kódovanie (vývoj).</li><li>Inštalácia a konfigurácia (HW/SW).</li><li>Migrácia dát zo starých systémov.</li><li><span class='hl-blue'>Testovanie</span> (hľadanie chýb).</li><li><span class='hl-green'>Školenie užívateľov</span>.</li></ul>" },
-            { id: 9, cat: "Fázy a Životný cyklus", icon: "fa-eye", color: "#f97316", q: "Ako prebieha monitorovanie a kontrola projektu?", a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Sleduje sa <span class='hl-blue'>skutočný stav</span> voči plánu.</li><li>Identifikujú sa <span class='hl-red'>Odchýlky</span> (časové, finančné).</li><li>Ak projekt mešká, prijímajú sa <span class='hl-orange'>Nápravné opatrenia</span>.</li><li>Reportuje sa stav sponzorovi.</li></ul>" },
-            { id: 10, cat: "Fázy a Životný cyklus", icon: "fa-flag-checkered", color: "#f97316", q: "Čo zahŕňa ukončenie projektu?", a: "<ol class='list-decimal pl-5 space-y-2 text-sm'><li><span class='hl-green'>Akceptácia výstupov</span> (klient podpíše prebratie).</li><li>Odovzdanie systému do ostrej prevádzky.</li><li>Vyhodnotenie projektu (Lessons Learned).</li><li><span class='hl-purple'>Uvoľnenie tímu a zdrojov</span>.</li><li>Archivácia dokumentácie a zmlúv.</li></ol>" },
-            { id: 11, cat: "Metodiky a Štandardy", icon: "fa-book", color: "#a855f7", q: "Čo sú metodiky riadenia projektov a prečo sú dôležité?", a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Sú to <span class='hl-blue'>štandardizované návody</span> na riadenie.</li><li>Zjednocujú komunikáciu v tíme.</li><li>Minimalizujú chaos a znižujú <span class='hl-red'>riziko zlyhania</span>.</li><li>Definujú, kto má kedy akú zodpovednosť.</li></ul>" },
-            { id: 12, cat: "Metodiky a Štandardy", icon: "fa-code-compare", color: "#a855f7", q: "Aký je rozdiel medzi metodikou a modelom vývoja software?", a: "<div class='space-y-3 text-sm'><div class='bg-blue-50/50 p-3 rounded-lg border-l-4 border-blue-500'><b class='text-blue-700 block mb-1'>Metodika riadenia (napr. PRINCE2)</b>Rieši manažment: <span class='hl-blue'>AKO projekt riadiť</span> (rozpočet, riziká, roly, byrokracia).</div><div class='bg-purple-50/50 p-3 rounded-lg border-l-4 border-purple-500'><b class='text-purple-700 block mb-1'>Model vývoja SW (napr. Agile)</b>Rieši techniku: <span class='hl-purple'>AKO tvoriť kód</span> (analýza, dizajn, programovanie, testy).</div></div>" },
-            { id: 13, cat: "Metodiky a Štandardy", icon: "fa-chess-knight", color: "#a855f7", q: "Aké sú hlavné charakteristiky metodiky PRINCE2?", a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Pôvodom z UK, <span class='hl-blue'>procesne orientovaná</span>.</li><li>Základom je <span class='hl-green'>Obchodné zdôvodnenie (Business Case)</span>.</li><li>Projekt je riadený <span class='hl-purple'>po etapách</span>.</li><li>Produkty (výstupy) sú dôležitejšie ako samotné činnosti.</li></ul>" },
-            { id: 14, cat: "Metodiky a Štandardy", icon: "fa-list-check", color: "#a855f7", q: "Aké princípy obsahuje PRINCE2?", a: "<b class='block mb-2 text-gray-800'>7 princípov PRINCE2:</b><ol class='list-decimal pl-5 space-y-1.5 text-sm'><li><span class='hl-green'>Obchodné zdôvodnenie</span></li><li>Učenie sa zo skúseností</li><li>Jasné roly a zodpovednosti</li><li><span class='hl-blue'>Riadenie po etapách</span></li><li><span class='hl-red'>Riadenie výnimiek</span> (delegovanie)</li><li>Zameranie na produkty</li><li>Prispôsobenie na mieru projektu</li></ol>" },
-            { id: 15, cat: "Metodiky a Štandardy", icon: "fa-stairs", color: "#a855f7", q: "Aké sú fáze PRINCE2 projektu?", a: "<ol class='list-decimal pl-5 space-y-1.5 text-sm'><li>Zahájenie projektu (SU)</li><li>Nastavenie smeru projektu (DP)</li><li><span class='hl-orange'>Iniciácia projektu (IP)</span></li><li><span class='hl-blue'>Riadenie etáp (CS)</span></li><li>Riadenie dodávky produktov (MP)</li><li>Riadenie prechodu medzi etapami (SB)</li><li><span class='hl-red'>Uzavretie projektu (CP)</span></li></ol>" },
-            { id: 16, cat: "Metodiky a Štandardy", icon: "fa-building", color: "#a855f7", q: "V akých typoch projektov sa PRINCE2 najčastejšie používa?", a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li><span class='hl-purple'>Stredné a veľké projekty</span>.</li><li><span class='hl-blue'>Verejná a štátna správa</span> (eurofondy).</li><li>Kde je kritická <span class='hl-orange'>formálna dokumentácia</span>.</li><li>Projekty s jasne definovaným koncovým produktom.</li></ul>" },
-            { id: 17, cat: "Metodiky a Štandardy", icon: "fa-globe", color: "#a855f7", q: "Čo je PMI a čo znamená PMBOK?", a: "<div class='space-y-3 text-sm'><div class='bg-blue-50/50 p-3 rounded-lg border-l-4 border-blue-500'><b class='text-blue-700 block mb-1'>PMI (Inštitút)</b>Project Management Institute - globálna organizácia (vydáva certifikát PMP).</div><div class='bg-green-50/50 p-3 rounded-lg border-l-4 border-green-500'><b class='text-green-700 block mb-1'>PMBOK (Štandard)</b>Project Management Body of Knowledge - obrovská encyklopédia najlepších PM praktík.</div></div>" },
-            { id: 18, cat: "Metodiky a Štandardy", icon: "fa-layer-group", color: "#a855f7", q: "Aké sú procesné skupiny PMBOK?", a: "<b class='block mb-2 text-gray-800'>5 Procesných skupín PMBOK:</b><ol class='list-decimal pl-5 space-y-2 text-sm'><li><span class='hl-blue'>Zahájenie</span> (Initiating)</li><li><span class='hl-orange'>Plánovanie</span> (Planning)</li><li><span class='hl-green'>Vykonávanie</span> (Executing)</li><li><span class='hl-purple'>Monitorovanie a kontrola</span> (Monitoring & Controlling)</li><li><span class='hl-red'>Ukončenie</span> (Closing)</li></ol>" },
-            { id: 19, cat: "Metodiky a Štandardy", icon: "fa-network-wired", color: "#a855f7", q: "Aké sú znalostné oblasti PMBOK?", a: "<b class='block mb-2 text-gray-800'>10 Znalostných oblastí (Výber):</b><ul class='list-disc pl-5 space-y-2 text-sm'><li><span class='hl-blue'>Integrácia a Rozsah</span></li><li><span class='hl-red'>Čas (Harmonogram) a Náklady</span></li><li><span class='hl-green'>Kvalita a Zdroje</span></li><li><span class='hl-purple'>Komunikácia a Riziká</span></li><li>Obstarávanie a <span class='hl-orange'>Stakeholderi</span></li></ul>" },
-            { id: 20, cat: "Metodiky a Štandardy", icon: "fa-user-tie", color: "#a855f7", q: "Čo je IPMA a čím sa líši od ostatných prístupov?", a: "<b class='block mb-2 text-sm text-gray-700'>Nerieši prísne procesy, ale <span class='hl-green'>schopnosti manažéra</span>.</b><div class='bg-gray-50 p-3 rounded-lg border-l-4 border-gray-400 text-sm'><b class='text-gray-800 block mb-2'>Oko kompetencií IPMA:</b><ol class='list-decimal pl-5 space-y-1.5'><li><span class='hl-blue'>Praktické/Technické</span> (WBS, čas)</li><li><span class='hl-orange'>Behaviorálne</span> (Mäkké zručnosti, leadership)</li><li><span class='hl-purple'>Kontextové</span> (Chápanie biznisu a stratégie)</li></ol></div>" },
-            { id: 21, cat: "Vývoj IS a Agilita", icon: "fa-laptop-code", color: "#22c55e", q: "Aké sú hlavné fáze vývoja informačného systému?", a: "<b class='block mb-2 text-gray-800'>Klasický životný cyklus IS (SDLC):</b><ol class='list-decimal pl-5 space-y-2 text-sm'><li><span class='hl-blue'>Analýza požiadaviek</span> (Čo to má robiť?)</li><li><span class='hl-purple'>Návrh/Architektúra</span> (Ako to urobíme?)</li><li><span class='hl-orange'>Implementácia</span> (Programovanie)</li><li><span class='hl-red'>Testovanie</span> (Hľadanie chýb)</li><li><span class='hl-green'>Nasadenie a údržba</span> (Produkcia)</li></ol>" },
-            { id: 22, cat: "Vývoj IS a Agilita", icon: "fa-magnifying-glass", color: "#22c55e", q: "Čo zahŕňa analýza požiadaviek?", a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Zber potrieb od <span class='hl-blue'>biznisu a užívateľov</span>.</li><li>Zápis požadovaných funkcií a procesov.</li><li>Zistenie technických obmedzení.</li><li>Výsledkom je detailný <span class='hl-green'>Analytický dokument (Špecifikácia)</span>.</li></ul>" },
-            { id: 23, cat: "Vývoj IS a Agilita", icon: "fa-sliders", color: "#22c55e", q: "Aké sú funkčné a nefunkčné požiadavky?", a: "<div class='space-y-3 text-sm'><div class='bg-blue-50/50 p-3 rounded-lg border-l-4 border-blue-500'><b class='text-blue-700 block mb-1'>Funkčné (ČO to robí)</b>Napr.: Systém umožní prihlásenie, vloženie do košíka, storno objednávky.</div><div class='bg-red-50/50 p-3 rounded-lg border-l-4 border-red-500'><b class='text-red-700 block mb-1'>Nefunkčné (AKO DOBRE to robí)</b>Napr.: Načíta sa do 2s (<span class='hl-red'>Výkon</span>), využíva SSL certifikát (<span class='hl-purple'>Bezpečnosť</span>).</div></div>" },
-            { id: 24, cat: "Vývoj IS a Agilita", icon: "fa-code-branch", color: "#22c55e", q: "Aké faktory ovplyvňujú voľbu metodiky vývoja IS?", a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Rozsah a komplexnosť projektu.</li><li><span class='hl-red'>Miera neistoty</span> (či sú požiadavky od začiatku jasné).</li><li>Skúsenosti a veľkosť vývojového tímu.</li><li>Nutnosť dodržiavať prísne štandardy (<span class='hl-blue'>regulačné orgány</span>).</li><li>Dostupnosť klienta pre priebežnú spätnú väzbu.</li></ul>" },
-            { id: 25, cat: "Vývoj IS a Agilita", icon: "fa-water", color: "#22c55e", q: "Čo je vodopádový model a kedy sa používa?", a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Je to <span class='hl-blue'>lineárny (sekvenčný) postup</span>. Fázy idú prísne po sebe zhora nadol.</li><li>Nová fáza začne až po úplnom dokončení predošlej.</li><li>Hodí sa pre projekty so <span class='hl-green'>100% jasnými a nemennými požiadavkami</span>.</li></ul>" },
-            { id: 26, cat: "Vývoj IS a Agilita", icon: "fa-balance-scale", color: "#22c55e", q: "Aké sú výhody a nevýhody vodopádového modelu?", a: "<div class='space-y-3 text-sm'><div class='bg-green-50/50 p-3 rounded-lg border-l-4 border-green-500'><b class='text-green-700 block mb-1'>Výhody</b>Jasná štruktúra, presný rozpočet, perfektná dokumentácia.</div><div class='bg-red-50/50 p-3 rounded-lg border-l-4 border-red-500'><b class='text-red-700 block mb-1'>Nevýhody</b><span class='hl-red'>Extrémna nepružnosť</span> voči zmenám. Zákazník vidí softvér až na konci.</div></div>" },
-            { id: 27, cat: "Vývoj IS a Agilita", icon: "fa-person-running", color: "#22c55e", q: "Čo je agilný prístup k vývoju software?", a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Práca sa doručí v <span class='hl-purple'>krátkych iteráciách (cykloch)</span>.</li><li>Zákazník má fungujúcu časť SW v rukách veľmi skoro.</li><li>Je vítaná <span class='hl-green'>zmena požiadaviek</span> aj v neskorších fázach.</li><li>Kladie dôraz na <span class='hl-blue'>komunikáciu tvárou v tvár</span> nad dokumentáciou.</li></ul>" },
-            { id: 28, cat: "Vývoj IS a Agilita", icon: "fa-football", color: "#22c55e", q: "Ako funguje Scrum (roly, šprinty, backlog)?", a: "<b class='block mb-2 text-gray-800'>Hlavné piliere:</b><ul class='list-disc pl-5 space-y-2 text-sm'><li><span class='hl-purple'>Product Owner:</span> Určuje priority v Backlogu.</li><li><span class='hl-green'>Scrum Master:</span> Koučuje tím a odstraňuje prekážky.</li><li><span class='hl-blue'>Sprint:</span> Fixný cyklus (2-4 týždne), po ktorom sa odovzdá funkčný prírastok.</li><li><span class='hl-orange'>Daily Standup:</span> 15-minútové denné stretnutia tímu.</li></ul>" },
-            { id: 29, cat: "Vývoj IS a Agilita", icon: "fa-clipboard-list", color: "#22c55e", q: "Ako funguje Kanban a čo znamená WIP limit?", a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Vizuálny manažment úloh na nástenke (To Do &rarr; In Progress &rarr; Done).</li><li><span class='hl-red'>WIP Limit (Work In Progress):</span> Tvrdé obmedzenie počtu úloh v jednom stĺpci.</li><li>Cieľ: Zabrániť preťaženiu ľudí a udržať <span class='hl-green'>plynulý tok práce (Flow)</span>.</li></ul>" },
-            { id: 30, cat: "Vývoj IS a Agilita", icon: "fa-hurricane", color: "#22c55e", q: "Čo je špirálový model a kedy sa využíva?", a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Iteratívny model, ktorého jadrom je neustála <span class='hl-red'>Analýza rizík a Prototypovanie</span> v každej slučke (špirále).</li><li>Ideálny pre <span class='hl-purple'>extrémne drahé, inovatívne a riskantné</span> projekty (napr. vesmírny výskum), kde by chyba znamenala katastrofu.</li></ul>" },
-            { id: 31, cat: "Čas a Plánovanie", icon: "fa-calendar-days", color: "#ef4444", q: "Čo je časový harmonogram projektu a aký je jeho význam?", a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Určuje: čo sa bude robiť, <span class='hl-blue'>kedy, ako dlho a v akom poradí</span>.</li><li>Zobrazuje <span class='hl-orange'>logické náväznosti</span> medzi úlohami.</li><li>Kritický nástroj pre PM na kontrolu, či projekt <span class='hl-red'>nemešká</span> oproti základnému plánu (Baseline).</li></ul>" },
-            { id: 32, cat: "Čas a Plánovanie", icon: "fa-list-ol", color: "#ef4444", q: "Ako sa vytvára zoznam aktivít projektu?", a: "<ol class='list-decimal pl-5 space-y-2 text-sm'><li>Vytvorenie <span class='hl-blue'>WBS (Work Breakdown Structure)</span>.</li><li>Rozpad na najmenšie kontrolovateľné úlohy.</li><li>Určenie závislostí (<span class='hl-orange'>A musí skončiť, aby B mohlo začať</span>).</li><li>Odhady trvania (v dňoch/hodinách) a priradenie zdrojov.</li></ol>" },
-            { id: 33, cat: "Čas a Plánovanie", icon: "fa-chart-gantt", color: "#ef4444", q: "Čo je Ganttov diagram a ako sa interpretuje?", a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Horizontálny pruhový graf.</li><li><b>Os Y:</b> Zoznam úloh. <b>Os X:</b> Časová os.</li><li>Dĺžka pruhu = <span class='hl-blue'>trvanie úlohy</span>.</li><li>Šípky medzi pruhmi = <span class='hl-orange'>závislosti</span>.</li><li>Kosoštvorce = <span class='hl-green'>Milníky</span> (kontrolné body s trvaním 0).</li></ul>" },
-            { id: 34, cat: "Čas a Plánovanie", icon: "fa-route", color: "#ef4444", q: "Čo je kritická cesta (CPM) a ako ju určujeme?", a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Je to najdlhšia súvislá cesta úloh od začiatku do konca.</li><li>Úlohy na nej majú <span class='hl-red'>Nulovú časovú rezervu</span>.</li><li>Ak sa zdrží hoci len o deň 1 úloha na kritickej ceste &rarr; <span class='hl-red'>zdrží sa celý projekt</span>.</li><li>Určuje minimálny možný čas dokončenia projektu.</li></ul>" },
-            { id: 35, cat: "Čas a Plánovanie", icon: "fa-stopwatch", color: "#ef4444", q: "Čo znamená časová rezerva (float)?", a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Je to \"vankúš\" času.</li><li>Doba, o ktorú môžeme <span class='hl-green'>posunúť alebo predĺžiť úlohu</span> bez toho, aby sme narušili termín celého projektu.</li><li>Úlohy s rezervou ležia <span class='hl-blue'>mimo kritickej cesty</span>.</li></ul>" },
-            { id: 36, cat: "Čas a Plánovanie", icon: "fa-calculator", color: "#ef4444", q: "Ako funguje metóda PERT a aké má vstupy (O, M, P)?", a: "<b class='block mb-2 text-center text-gray-800 text-sm'>Vzorec: Očakávaný čas (TE)</b><div class='bg-slate-100 p-3 text-center rounded-lg text-lg font-mono font-bold mb-3 border border-slate-200'>(<span class='hl-green'>O</span> + 4x<span class='hl-blue'>M</span> + <span class='hl-red'>P</span>) / 6</div><ul class='list-none space-y-2 text-sm'><li><span class='hl-green inline-block w-8 text-center'>O</span> <b>Optimistický:</b> Všetko ide hladko.</li><li><span class='hl-blue inline-block w-8 text-center'>M</span> <b>Pravdepodobný:</b> Štandardný scenár.</li><li><span class='hl-red inline-block w-8 text-center'>P</span> <b>Pesimistický:</b> Všetko sa pokazí.</li></ul>" },
-            { id: 37, cat: "Čas a Plánovanie", icon: "fa-code-branch", color: "#ef4444", q: "Kedy je vhodné použiť PERT namiesto CPM?", a: "<div class='space-y-3 text-sm'><div class='bg-blue-50/50 p-3 rounded-lg border-l-4 border-blue-500'><b class='text-blue-700 block mb-1'>PERT</b>Pre inovatívne projekty (<span class='hl-red'>vysoká neistota</span>), kde časy len tipujeme (výskum). Počíta s odchýlkou.</div><div class='bg-green-50/50 p-3 rounded-lg border-l-4 border-green-500'><b class='text-green-700 block mb-1'>CPM (Kritická cesta)</b>Pre rutinné projekty (<span class='hl-green'>istota trvania</span>), kde máme historické dáta (napr. stavebníctvo).</div></div>" },
-            { id: 38, cat: "Čas a Plánovanie", icon: "fa-flag", color: "#ef4444", q: "Čo je milníkové plánovanie a aké má výhody?", a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Milník je dôležitý kontrolný bod v čase <span class='hl-blue'>(trvanie = 0)</span>. Napr. \"Fáza testovania ukončená\".</li><li>Výborne slúži na <span class='hl-green'>reportovanie Top Manažmentu</span>, ktorý nezaujímajú detaily stoviek malých úloh.</li><li>Rýchlo ukazuje, či projekt plní kľúčové termíny.</li></ul>" },
-            { id: 39, cat: "Tím a Roly", icon: "fa-users-gear", color: "#0d9488", q: "Čo je tímový management projektu a prečo je dôležitý?", a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Zahŕňa výber ľudí, ich <span class='hl-green'>motiváciu</span>, riešenie konfliktov a budovanie komunikácie.</li><li>Je kľúčový, lebo softvér netvoria stroje, ale ľudia.</li><li>Zlé mäkké zručnosti (Soft-skills) PM sú najčastejším <span class='hl-red'>dôvodom zlyhania</span> inak technicky skvelých projektov.</li></ul>" },
-            { id: 40, cat: "Tím a Roly", icon: "fa-user-shield", color: "#0d9488", q: "Aké sú hlavné roly v projektovom tíme IS?", a: "<ol class='list-decimal pl-5 space-y-2 text-sm font-medium'><li><span class='hl-purple'>Sponzor (Zákazník):</span> Platí projekt, definuje víziu.</li><li><span class='hl-orange'>Riadiaci výbor:</span> Schvaľuje rozpočet a etapy.</li><li><span class='hl-blue'>Projektový manažér (PM):</span> Riadi denný chod a tím.</li><li><span class='hl-green'>Kľúčoví užívatelia:</span> Testujú systém z pohľadu biznisu.</li><li><span class='hl-red'>Vývojári / Experti:</span> Reálne budujú systém.</li></ol>" },
+            { id: 1, cat: "Základy", icon: "fa-rocket", color: "#3b82f6", 
+              q: "Čo je projekt a aké má hlavné charakteristiky?", 
+              a: "Projekt je <span class='hl-blue'>dočasná</span>, <span class='hl-purple'>jedinečná</span> a <span class='hl-green'>cielená</span> činnosť.<br><br><b class='block mb-2 text-gray-800'>Hlavné znaky:</b><ul class='list-disc pl-5 space-y-1.5 text-sm'><li>Jasný cieľ, začiatok a koniec</li><li><span class='hl-red'>Obmedzené zdroje</span> (čas, peniaze, ľudia)</li><li>Prítomnosť rizika a neistoty</li></ul>" },
+            { id: 2, cat: "Základy", icon: "fa-not-equal", color: "#3b82f6", 
+              q: "Aký je rozdiel medzi projektom a bežnou operatívnou činnosťou?", 
+              a: "<div class='space-y-3 text-sm'><div class='bg-blue-50/50 p-3 rounded-lg border-l-4 border-blue-500'><b class='text-blue-700 block mb-1'>Projekt</b>Je <span class='hl-blue'>jednorazový</span> a inovatívny. Jeho cieľom je <span class='hl-green'>zmeniť</span> súčasný stav.</div><div class='bg-orange-50/50 p-3 rounded-lg border-l-4 border-orange-500'><b class='text-orange-700 block mb-1'>Operatíva</b>Je <span class='hl-orange'>opakovaná</span> a rutinná. Jej cieľom je <span class='hl-purple'>udržiavať</span> bežnú prevádzku.</div></div>" },
+            { id: 3, cat: "Základy", icon: "fa-bars-progress", color: "#3b82f6", 
+              q: "Čo znamená pojem riadenie projektu (project management)?", 
+              a: "<b class='block mb-2 text-gray-800'>Aplikácia 4 manažérskych funkcií:</b><ol class='list-decimal pl-5 space-y-2 text-sm'><li><span class='hl-orange'>Plánovanie</span> (čo, kedy, za koľko)</li><li><span class='hl-blue'>Organizovanie</span> (kto to urobí)</li><li><span class='hl-green'>Vedenie</span> (motivácia tímu)</li><li><span class='hl-red'>Kontrola</span> (porovnanie plánu a reality)</li></ol>" },
+            { id: 4, cat: "Základy", icon: "fa-key", color: "#3b82f6", 
+              q: "Aké sú kľúčové prvky riadenia projektu?", 
+              a: "<b class='block mb-2 text-gray-800'>Tzv. Magický trojuholník (obmedzenia):</b><ul class='list-disc pl-5 space-y-2 text-sm'><li><span class='hl-purple'>Rozsah</span> (Scope)</li><li><span class='hl-red'>Čas</span> (Time)</li><li><span class='hl-orange'>Náklady</span> (Cost)</li><li><span class='hl-green'>Kvalita</span> (Quality)</li></ul>" },
+            { id: 5, cat: "Fázy a Životný cyklus", icon: "fa-rotate", color: "#f97316", 
+              q: "Aké sú hlavné fázy životného cyklu projektu?", 
+              a: "<b class='block mb-2 text-gray-800'>5 štandardných fáz:</b><ol class='list-decimal pl-5 space-y-1.5 text-sm'><li><span class='hl-blue'>Iniciácia</span> (Nápad a štúdia)</li><li><span class='hl-orange'>Plánovanie</span> (Detailný rozpis)</li><li><span class='hl-green'>Realizácia</span> (Samotná práca)</li><li><span class='hl-purple'>Monitorovanie a kontrola</span> (Priebežne)</li><li><span class='hl-red'>Ukončenie</span> (Odovzdanie)</li></ol>" },
+            { id: 6, cat: "Fázy a Životný cyklus", icon: "fa-seedling", color: "#f97316", 
+              q: "Čo sa deje vo fáze iniciácie projektu?", 
+              a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Formulujú sa požiadavky a hlavné ciele.</li><li>Posudzuje sa <span class='hl-green'>Uskutočniteľnosť (Feasibility)</span>.</li><li>Analyzujú sa prínosy vs. riziká.</li><li>Padne <span class='hl-red font-bold'>kľúčové rozhodnutie (Go/No-Go)</span>, či projekt vôbec spustiť.</li></ul>" },
+            { id: 7, cat: "Fázy a Životný cyklus", icon: "fa-map", color: "#f97316", 
+              q: "Čo zahŕňa fáza plánovania projektu?", 
+              a: "<b class='block mb-2 text-gray-800'>Vytvára sa podrobný plán:</b><ul class='list-disc pl-5 space-y-2 text-sm'><li><span class='hl-blue'>WBS (Rozpis prác)</span> – dekompozícia úloh</li><li><span class='hl-red'>Časový harmonogram</span> a <span class='hl-green'>Milníky</span></li><li>Rozpočet a zdroje</li><li>Plán komunikácie a <span class='hl-orange'>riadenia rizík</span></li></ul>" },
+            { id: 8, cat: "Fázy a Životný cyklus", icon: "fa-hammer", color: "#f97316", 
+              q: "Aké činnosti prebiehajú počas realizácie projektu?", 
+              a: "<b class='block mb-2 text-gray-800'>Samotná tvorba riešenia:</b><ul class='list-disc pl-5 space-y-2 text-sm'><li>Programovanie a kódovanie (vývoj).</li><li>Inštalácia a konfigurácia (HW/SW).</li><li>Migrácia dát zo starých systémov.</li><li><span class='hl-blue'>Testovanie</span> (hľadanie chýb).</li><li><span class='hl-green'>Školenie užívateľov</span>.</li></ul>" },
+            { id: 9, cat: "Fázy a Životný cyklus", icon: "fa-eye", color: "#f97316", 
+              q: "Ako prebieha monitorovanie a kontrola projektu?", 
+              a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Sleduje sa <span class='hl-blue'>skutočný stav</span> voči plánu.</li><li>Identifikujú sa <span class='hl-red'>Odchýlky</span> (časové, finančné).</li><li>Ak projekt mešká, prijímajú sa <span class='hl-orange'>Nápravné opatrenia</span>.</li><li>Reportuje sa stav sponzorovi.</li></ul>" },
+            { id: 10, cat: "Fázy a Životný cyklus", icon: "fa-flag-checkered", color: "#f97316", 
+              q: "Čo zahŕňa ukončenie projektu?", 
+              a: "<ol class='list-decimal pl-5 space-y-2 text-sm'><li><span class='hl-green'>Akceptácia výstupov</span> (klient podpíše prebratie).</li><li>Odovzdanie systému do ostrej prevádzky.</li><li>Vyhodnotenie projektu (Lessons Learned).</li><li><span class='hl-purple'>Uvoľnenie tímu a zdrojov</span>.</li><li>Archivácia dokumentácie a zmlúv.</li></ol>" },
+            { id: 11, cat: "Metodiky a Štandardy", icon: "fa-book", color: "#a855f7", 
+              q: "Čo sú metodiky riadenia projektov a prečo sú dôležité?", 
+              a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Sú to <span class='hl-blue'>štandardizované návody</span> na riadenie.</li><li>Zjednocujú komunikáciu v tíme.</li><li>Minimalizujú chaos a znižujú <span class='hl-red'>riziko zlyhania</span>.</li><li>Definujú, kto má kedy akú zodpovednosť.</li></ul>" },
+            { id: 12, cat: "Metodiky a Štandardy", icon: "fa-code-compare", color: "#a855f7", 
+              q: "Aký je rozdiel medzi metodikou a modelom vývoja software?", 
+              a: "<div class='space-y-3 text-sm'><div class='bg-blue-50/50 p-3 rounded-lg border-l-4 border-blue-500'><b class='text-blue-700 block mb-1'>Metodika riadenia (napr. PRINCE2)</b>Rieši manažment: <span class='hl-blue'>AKO projekt riadiť</span> (rozpočet, riziká, roly, byrokracia).</div><div class='bg-purple-50/50 p-3 rounded-lg border-l-4 border-purple-500'><b class='text-purple-700 block mb-1'>Model vývoja SW (napr. Agile)</b>Rieši techniku: <span class='hl-purple'>AKO tvoriť kód</span> (analýza, dizajn, programovanie, testy).</div></div>" },
+            { id: 13, cat: "Metodiky a Štandardy", icon: "fa-chess-knight", color: "#a855f7", 
+              q: "Aké sú hlavné charakteristiky metodiky PRINCE2?", 
+              a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Pôvodom z UK, <span class='hl-blue'>procesne orientovaná</span>.</li><li>Základom je <span class='hl-green'>Obchodné zdôvodnenie (Business Case)</span>.</li><li>Projekt je riadený <span class='hl-purple'>po etapách</span>.</li><li>Produkty (výstupy) sú dôležitejšie ako samotné činnosti.</li></ul>" },
+            { id: 14, cat: "Metodiky a Štandardy", icon: "fa-list-check", color: "#a855f7", 
+              q: "Aké princípy obsahuje PRINCE2?", 
+              a: "<b class='block mb-2 text-gray-800'>7 princípov PRINCE2:</b><ol class='list-decimal pl-5 space-y-1.5 text-sm'><li><span class='hl-green'>Obchodné zdôvodnenie</span></li><li>Učenie sa zo skúseností</li><li>Jasné roly a zodpovednosti</li><li><span class='hl-blue'>Riadenie po etapách</span></li><li><span class='hl-red'>Riadenie výnimiek</span> (delegovanie)</li><li>Zameranie na produkty</li><li>Prispôsobenie na mieru projektu</li></ol>" },
+            { id: 15, cat: "Metodiky a Štandardy", icon: "fa-stairs", color: "#a855f7", 
+              q: "Aké sú fáze PRINCE2 projektu?", 
+              a: "<ol class='list-decimal pl-5 space-y-1.5 text-sm'><li>Zahájenie projektu (SU)</li><li>Nastavenie smeru projektu (DP)</li><li><span class='hl-orange'>Iniciácia projektu (IP)</span></li><li><span class='hl-blue'>Riadenie etáp (CS)</span></li><li>Riadenie dodávky produktov (MP)</li><li>Riadenie prechodu medzi etapami (SB)</li><li><span class='hl-red'>Uzavretie projektu (CP)</span></li></ol>" },
+            { id: 16, cat: "Metodiky a Štandardy", icon: "fa-building", color: "#a855f7", 
+              q: "V akých typoch projektov sa PRINCE2 najčastejšie používa?", 
+              a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li><span class='hl-purple'>Stredné a veľké projekty</span>.</li><li><span class='hl-blue'>Verejná a štátna správa</span> (eurofondy).</li><li>Kde je kritická <span class='hl-orange'>formálna dokumentácia</span>.</li><li>Projekty s jasne definovaným koncovým produktom.</li></ul>" },
+            { id: 17, cat: "Metodiky a Štandardy", icon: "fa-globe", color: "#a855f7", 
+              q: "Čo je PMI a čo znamená PMBOK?", 
+              a: "<div class='space-y-3 text-sm'><div class='bg-blue-50/50 p-3 rounded-lg border-l-4 border-blue-500'><b class='text-blue-700 block mb-1'>PMI (Inštitút)</b>Project Management Institute - globálna organizácia (vydáva certifikát PMP).</div><div class='bg-green-50/50 p-3 rounded-lg border-l-4 border-green-500'><b class='text-green-700 block mb-1'>PMBOK (Štandard)</b>Project Management Body of Knowledge - obrovská encyklopédia najlepších PM praktík.</div></div>" },
+            { id: 18, cat: "Metodiky a Štandardy", icon: "fa-layer-group", color: "#a855f7", 
+              q: "Aké sú procesné skupiny PMBOK?", 
+              a: "<b class='block mb-2 text-gray-800'>5 Procesných skupín PMBOK:</b><ol class='list-decimal pl-5 space-y-2 text-sm'><li><span class='hl-blue'>Zahájenie</span> (Initiating)</li><li><span class='hl-orange'>Plánovanie</span> (Planning)</li><li><span class='hl-green'>Vykonávanie</span> (Executing)</li><li><span class='hl-purple'>Monitorovanie a kontrola</span> (Monitoring & Controlling)</li><li><span class='hl-red'>Ukončenie</span> (Closing)</li></ol>" },
+            { id: 19, cat: "Metodiky a Štandardy", icon: "fa-network-wired", color: "#a855f7", 
+              q: "Aké sú znalostné oblasti PMBOK?", 
+              a: "<b class='block mb-2 text-gray-800'>10 Znalostných oblastí (Výber):</b><ul class='list-disc pl-5 space-y-2 text-sm'><li><span class='hl-blue'>Integrácia a Rozsah</span></li><li><span class='hl-red'>Čas (Harmonogram) a Náklady</span></li><li><span class='hl-green'>Kvalita a Zdroje</span></li><li><span class='hl-purple'>Komunikácia a Riziká</span></li><li>Obstarávanie a <span class='hl-orange'>Stakeholderi</span></li></ul>" },
+            { id: 20, cat: "Metodiky a Štandardy", icon: "fa-user-tie", color: "#a855f7", 
+              q: "Čo je IPMA a čím sa líši od ostatných prístupov?", 
+              a: "<b class='block mb-2 text-sm text-gray-700'>Nerieši prísne procesy, ale <span class='hl-green'>schopnosti manažéra</span>.</b><div class='bg-gray-50 p-3 rounded-lg border-l-4 border-gray-400 text-sm'><b class='text-gray-800 block mb-2'>Oko kompetencií IPMA:</b><ol class='list-decimal pl-5 space-y-1.5'><li><span class='hl-blue'>Praktické/Technické</span> (WBS, čas)</li><li><span class='hl-orange'>Behaviorálne</span> (Mäkké zručnosti, leadership)</li><li><span class='hl-purple'>Kontextové</span> (Chápanie biznisu a stratégie)</li></ol></div>" },
+            { id: 21, cat: "Vývoj IS a Agilita", icon: "fa-laptop-code", color: "#22c55e", 
+              q: "Aké sú hlavné fáze vývoja informačného systému?", 
+              a: "<b class='block mb-2 text-gray-800'>Klasický životný cyklus IS (SDLC):</b><ol class='list-decimal pl-5 space-y-2 text-sm'><li><span class='hl-blue'>Analýza požiadaviek</span> (Čo to má robiť?)</li><li><span class='hl-purple'>Návrh/Architektúra</span> (Ako to urobíme?)</li><li><span class='hl-orange'>Implementácia</span> (Programovanie)</li><li><span class='hl-red'>Testovanie</span> (Hľadanie chýb)</li><li><span class='hl-green'>Nasadenie a údržba</span> (Produkcia)</li></ol>" },
+            { id: 22, cat: "Vývoj IS a Agilita", icon: "fa-magnifying-glass", color: "#22c55e", 
+              q: "Čo zahŕňa analýza požiadaviek?", 
+              a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Zber potrieb od <span class='hl-blue'>biznisu a užívateľov</span>.</li><li>Zápis požadovaných funkcií a procesov.</li><li>Zistenie technických obmedzení.</li><li>Výsledkom je detailný <span class='hl-green'>Analytický dokument (Špecifikácia)</span>.</li></ul>" },
+            { id: 23, cat: "Vývoj IS a Agilita", icon: "fa-sliders", color: "#22c55e", 
+              q: "Aké sú funkčné a nefunkčné požiadavky?", 
+              a: "<div class='space-y-3 text-sm'><div class='bg-blue-50/50 p-3 rounded-lg border-l-4 border-blue-500'><b class='text-blue-700 block mb-1'>Funkčné (ČO to robí)</b>Napr.: Systém umožní prihlásenie, vloženie do košíka, storno objednávky.</div><div class='bg-red-50/50 p-3 rounded-lg border-l-4 border-red-500'><b class='text-red-700 block mb-1'>Nefunkčné (AKO DOBRE to robí)</b>Napr.: Načíta sa do 2s (<span class='hl-red'>Výkon</span>), využíva SSL certifikát (<span class='hl-purple'>Bezpečnosť</span>).</div></div>" },
+            { id: 24, cat: "Vývoj IS a Agilita", icon: "fa-code-branch", color: "#22c55e", 
+              q: "Aké faktory ovplyvňujú voľbu metodiky vývoja IS?", 
+              a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Rozsah a komplexnosť projektu.</li><li><span class='hl-red'>Miera neistoty</span> (či sú požiadavky od začiatku jasné).</li><li>Skúsenosti a veľkosť vývojového tímu.</li><li>Nutnosť dodržiavať prísne štandardy (<span class='hl-blue'>regulačné orgány</span>).</li><li>Dostupnosť klienta pre priebežnú spätnú väzbu.</li></ul>" },
+            { id: 25, cat: "Vývoj IS a Agilita", icon: "fa-water", color: "#22c55e", 
+              q: "Čo je vodopádový model a kedy sa používa?", 
+              a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Je to <span class='hl-blue'>lineárny (sekvenčný) postup</span>. Fázy idú prísne po sebe zhora nadol.</li><li>Nová fáza začne až po úplnom dokončení predošlej.</li><li>Hodí sa pre projekty so <span class='hl-green'>100% jasnými a nemennými požiadavkami</span>.</li></ul>" },
+            { id: 26, cat: "Vývoj IS a Agilita", icon: "fa-balance-scale", color: "#22c55e", 
+              q: "Aké sú výhody a nevýhody vodopádového modelu?", 
+              a: "<div class='space-y-3 text-sm'><div class='bg-green-50/50 p-3 rounded-lg border-l-4 border-green-500'><b class='text-green-700 block mb-1'>Výhody</b>Jasná štruktúra, presný rozpočet, perfektná dokumentácia.</div><div class='bg-red-50/50 p-3 rounded-lg border-l-4 border-red-500'><b class='text-red-700 block mb-1'>Nevýhody</b><span class='hl-red'>Extrémna nepružnosť</span> voči zmenám. Zákazník vidí softvér až na konci.</div></div>" },
+            { id: 27, cat: "Vývoj IS a Agilita", icon: "fa-person-running", color: "#22c55e", 
+              q: "Čo je agilný prístup k vývoju software?", 
+              a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Práca sa doručí v <span class='hl-purple'>krátkych iteráciách (cykloch)</span>.</li><li>Zákazník má fungujúcu časť SW v rukách veľmi skoro.</li><li>Je vítaná <span class='hl-green'>zmena požiadaviek</span> aj v neskorších fázach.</li><li>Kladie dôraz na <span class='hl-blue'>komunikáciu tvárou v tvár</span> nad dokumentáciou.</li></ul>" },
+            { id: 28, cat: "Vývoj IS a Agilita", icon: "fa-football", color: "#22c55e", 
+              q: "Ako funguje Scrum (roly, šprinty, backlog)?", 
+              a: "<b class='block mb-2 text-gray-800'>Hlavné piliere:</b><ul class='list-disc pl-5 space-y-2 text-sm'><li><span class='hl-purple'>Product Owner:</span> Určuje priority v Backlogu.</li><li><span class='hl-green'>Scrum Master:</span> Koučuje tím a odstraňuje prekážky.</li><li><span class='hl-blue'>Sprint:</span> Fixný cyklus (2-4 týždne), po ktorom sa odovzdá funkčný prírastok.</li><li><span class='hl-orange'>Daily Standup:</span> 15-minútové denné stretnutia tímu.</li></ul>" },
+            { id: 29, cat: "Vývoj IS a Agilita", icon: "fa-clipboard-list", color: "#22c55e", 
+              q: "Ako funguje Kanban a čo znamená WIP limit?", 
+              a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Vizuálny manažment úloh na nástenke (To Do &rarr; In Progress &rarr; Done).</li><li><span class='hl-red'>WIP Limit (Work In Progress):</span> Tvrdé obmedzenie počtu úloh v jednom stĺpci.</li><li>Cieľ: Zabrániť preťaženiu ľudí a udržať <span class='hl-green'>plynulý tok práce (Flow)</span>.</li></ul>" },
+            { id: 30, cat: "Vývoj IS a Agilita", icon: "fa-hurricane", color: "#22c55e", 
+              q: "Čo je špirálový model a kedy sa využíva?", 
+              a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Iteratívny model, ktorého jadrom je neustála <span class='hl-red'>Analýza rizík a Prototypovanie</span> v každej slučke (špirále).</li><li>Ideálny pre <span class='hl-purple'>extrémne drahé, inovatívne a riskantné</span> projekty (napr. vesmírny výskum), kde by chyba znamenala katastrofu.</li></ul>" },
+            { id: 31, cat: "Čas a Plánovanie", icon: "fa-calendar-days", color: "#ef4444", 
+              q: "Čo je časový harmonogram projektu a aký je jeho význam?", 
+              a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Určuje: čo sa bude robiť, <span class='hl-blue'>kedy, ako dlho a v akom poradí</span>.</li><li>Zobrazuje <span class='hl-orange'>logické náväznosti</span> medzi úlohami.</li><li>Kritický nástroj pre PM na kontrolu, či projekt <span class='hl-red'>nemešká</span> oproti základnému plánu (Baseline).</li></ul>" },
+            { id: 32, cat: "Čas a Plánovanie", icon: "fa-list-ol", color: "#ef4444", 
+              q: "Ako sa vytvára zoznam aktivít projektu?", 
+              a: "<ol class='list-decimal pl-5 space-y-2 text-sm'><li>Vytvorenie <span class='hl-blue'>WBS (Work Breakdown Structure)</span>.</li><li>Rozpad na najmenšie kontrolovateľné úlohy.</li><li>Určenie závislostí (<span class='hl-orange'>A musí skončiť, aby B mohlo začať</span>).</li><li>Odhady trvania (v dňoch/hodinách) a priradenie zdrojov.</li></ol>" },
+            { id: 33, cat: "Čas a Plánovanie", icon: "fa-chart-gantt", color: "#ef4444", 
+              q: "Čo je Ganttov diagram a ako sa interpretuje?", 
+              a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Horizontálny pruhový graf.</li><li><b>Os Y:</b> Zoznam úloh. <b>Os X:</b> Časová os.</li><li>Dĺžka pruhu = <span class='hl-blue'>trvanie úlohy</span>.</li><li>Šípky medzi pruhmi = <span class='hl-orange'>závislosti</span>.</li><li>Kosoštvorce = <span class='hl-green'>Milníky</span> (kontrolné body s trvaním 0).</li></ul>" },
+            { id: 34, cat: "Čas a Plánovanie", icon: "fa-route", color: "#ef4444", 
+              q: "Čo je kritická cesta (CPM) a ako ju určujeme?", 
+              a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Je to najdlhšia súvislá cesta úloh od začiatku do konca.</li><li>Úlohy na nej majú <span class='hl-red'>Nulovú časovú rezervu</span>.</li><li>Ak sa zdrží hoci len o deň 1 úloha na kritickej ceste &rarr; <span class='hl-red'>zdrží sa celý projekt</span>.</li><li>Určuje minimálny možný čas dokončenia projektu.</li></ul>" },
+            { id: 35, cat: "Čas a Plánovanie", icon: "fa-stopwatch", color: "#ef4444", 
+              q: "Čo znamená časová rezerva (float)?", 
+              a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Je to \"vankúš\" času.</li><li>Doba, o ktorú môžeme <span class='hl-green'>posunúť alebo predĺžiť úlohu</span> bez toho, aby sme narušili termín celého projektu.</li><li>Úlohy s rezervou ležia <span class='hl-blue'>mimo kritickej cesty</span>.</li></ul>" },
+            { id: 36, cat: "Čas a Plánovanie", icon: "fa-calculator", color: "#ef4444", 
+              q: "Ako funguje metóda PERT a aké má vstupy (O, M, P)?", 
+              a: "<b class='block mb-2 text-center text-gray-800 text-sm'>Vzorec: Očakávaný čas (TE)</b><div class='bg-slate-100 p-3 text-center rounded-lg text-lg font-mono font-bold mb-3 border border-slate-200'>(<span class='hl-green'>O</span> + 4x<span class='hl-blue'>M</span> + <span class='hl-red'>P</span>) / 6</div><ul class='list-none space-y-2 text-sm'><li><span class='hl-green inline-block w-8 text-center'>O</span> <b>Optimistický:</b> Všetko ide hladko.</li><li><span class='hl-blue inline-block w-8 text-center'>M</span> <b>Pravdepodobný:</b> Štandardný scenár.</li><li><span class='hl-red inline-block w-8 text-center'>P</span> <b>Pesimistický:</b> Všetko sa pokazí.</li></ul>" },
+            { id: 37, cat: "Čas a Plánovanie", icon: "fa-code-branch", color: "#ef4444", 
+              q: "Kedy je vhodné použiť PERT namiesto CPM?", 
+              a: "<div class='space-y-3 text-sm'><div class='bg-blue-50/50 p-3 rounded-lg border-l-4 border-blue-500'><b class='text-blue-700 block mb-1'>PERT</b>Pre inovatívne projekty (<span class='hl-red'>vysoká neistota</span>), kde časy len tipujeme (výskum). Počíta s odchýlkou.</div><div class='bg-green-50/50 p-3 rounded-lg border-l-4 border-green-500'><b class='text-green-700 block mb-1'>CPM (Kritická cesta)</b>Pre rutinné projekty (<span class='hl-green'>istota trvania</span>), kde máme historické dáta (napr. stavebníctvo).</div></div>" },
+            { id: 38, cat: "Čas a Plánovanie", icon: "fa-flag", color: "#ef4444", 
+              q: "Čo je milníkové plánovanie a aké má výhody?", 
+              a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Milník je dôležitý kontrolný bod v čase <span class='hl-blue'>(trvanie = 0)</span>. Napr. \"Fáza testovania ukončená\".</li><li>Výborne slúži na <span class='hl-green'>reportovanie Top Manažmentu</span>, ktorý nezaujímajú detaily stoviek malých úloh.</li><li>Rýchlo ukazuje, či projekt plní kľúčové termíny.</li></ul>" },
+            { id: 39, cat: "Tím a Roly", icon: "fa-users-gear", color: "#0d9488", 
+              q: "Čo je tímový management projektu a prečo je dôležitý?", 
+              a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li>Zahŕňa výber ľudí, ich <span class='hl-green'>motiváciu</span>, riešenie konfliktov a budovanie komunikácie.</li><li>Je kľúčový, lebo softvér netvoria stroje, ale ľudia.</li><li>Zlé mäkké zručnosti (Soft-skills) PM sú najčastejším <span class='hl-red'>dôvodom zlyhania</span> inak technicky skvelých projektov.</li></ul>" },
+            { id: 40, cat: "Tím a Roly", icon: "fa-user-shield", color: "#0d9488", 
+              q: "Aké sú hlavné roly v projektovom tíme IS?", 
+              a: "<ol class='list-decimal pl-5 space-y-2 text-sm font-medium'><li><span class='hl-purple'>Sponzor (Zákazník):</span> Platí projekt, definuje víziu.</li><li><span class='hl-orange'>Riadiaci výbor:</span> Schvaľuje rozpočet a etapy.</li><li><span class='hl-blue'>Projektový manažér (PM):</span> Riadi denný chod a tím.</li><li><span class='hl-green'>Kľúčoví užívatelia:</span> Testujú systém z pohľadu biznisu.</li><li><span class='hl-red'>Vývojári / Experti:</span> Reálne budujú systém.</li></ol>" },
             
             /* --- NOVÉ OTÁZKY: SKÚŠKOVÉ --- */
-            { id: 41, cat: "Skúškové 2024", icon: "fa-pen-to-square", color: "#eab308", q: "Uveďte definíciu projektu a jeho všeobecnú charakteristiku.", a: "Projekt je <span class='hl-blue'>jednorazový</span>, časovo a nákladovo ohraničený proces, ktorý má za cieľ vytvoriť <span class='hl-green'>unikátny výstup</span>.<br><br><b class='block mb-2 text-gray-800'>Hlavné znaky:</b><ul class='list-disc pl-5 space-y-1.5 text-sm'><li>Jasný cieľ</li><li>Obmedzené zdroje (čas, peniaze)</li><li><span class='hl-red'>Riziko a neistota</span></li><li>Špecifická organizácia</li></ul>" },
-            { id: 42, cat: "Skúškové 2024", icon: "fa-sitemap", color: "#eab308", q: "Charakterizujte jednotlivé typy projektových organizačných štruktúr.", a: "<div class='space-y-3 text-sm'><div class='p-3 bg-blue-50/50 rounded-lg border-l-4 border-blue-500'><b class='text-blue-700 block mb-1'>Funkcionálna</b>PM má veľmi slabú právomoc, členovia sú riadení líniovým manažérom.</div><div class='p-3 bg-purple-50/50 rounded-lg border-l-4 border-purple-500'><b class='text-purple-700 block mb-1'>Projektová (Čistá)</b>PM má plnú moc, tím je vyčlenený iba pre projekt.</div><div class='p-3 bg-green-50/50 rounded-lg border-l-4 border-green-500'><b class='text-green-700 block mb-1'>Maticová</b>Zamestnanci majú 2 šéfov (líniového aj projektového). Kompromis pre zdieľanie zdrojov.</div></div>" },
-            { id: 43, cat: "Skúškové 2024", icon: "fa-server", color: "#eab308", q: "Aké vlastnosti má mať IKT, aby prinášala pozitívny efekt v organizácii?", a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li><span class='hl-blue'>Súlad s biznis stratégiou</span> (Business-IT alignment).</li><li>Znižovanie nákladov a zvyšovanie produktivity.</li><li><span class='hl-green'>Podpora rozhodovania</span> (Business Intelligence).</li><li>Bezpečnosť, flexibilita a používateľská prívetivosť.</li></ul>" },
-            { id: 44, cat: "Skúškové 2024", icon: "fa-laptop-code", color: "#eab308", q: "Popíšte zvláštnosti projektov IS v porovnaní s klasickými projektmi.", a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li><span class='hl-purple'>Nehmotnosť výstupu:</span> Softvér nie je fyzicky vidieť.</li><li><span class='hl-red'>Vysoká komplexita:</span> Množstvo neviditeľných logických väzieb.</li><li><span class='hl-orange'>Rýchle zmeny technológií:</span> Riziko zastarania počas vývoja.</li><li>Nutnosť neustálej komunikácie s budúcim používateľom.</li></ul>" },
-            { id: 45, cat: "Skúškové 2024", icon: "fa-triangle-exclamation", color: "#eab308", q: "Aké sú hlavné riziká projektu IS (z pohľadu dodávateľa a odberateľa)?", a: "<div class='space-y-3 text-sm'><div class='bg-red-50/50 p-3 rounded-lg border-l-4 border-red-500'><b class='text-red-700 block mb-1'>Odberateľ (Zákazník)</b>Prekročenie rozpočtu, nedodanie funkcií, <span class='hl-red'>Vendor lock-in</span> (závislosť na dodávateľovi), odpor zamestnancov.</div><div class='bg-orange-50/50 p-3 rounded-lg border-l-4 border-orange-500'><b class='text-orange-700 block mb-1'>Dodávateľ (IT firma)</b><span class='hl-orange'>Nejasné zadanie (Scope creep)</span>, nereálne termíny, nedostatok expertov.</div></div>" },
-            { id: 46, cat: "Skúškové 2024", icon: "fa-file-signature", color: "#eab308", q: "Definujte zmysel a obsah Štúdie uskutočniteľnosti (Feasibility Study).", a: "<b class='block mb-2 text-sm text-gray-800'>Zmysel: Poskytnúť manažmentu tvrdé dáta pre rozhodnutie, <span class='hl-green'>či projekt vôbec začať</span>.</b><div class='bg-gray-50 p-3 rounded-lg border-l-4 border-gray-400 text-sm'><b class='block mb-2 text-gray-700'>Obsah:</b><ul class='list-disc pl-5 space-y-1.5'><li>Analýza súčasného stavu a alternatív.</li><li><span class='hl-blue'>Technologická uskutočniteľnosť</span>.</li><li><span class='hl-orange'>Finančná analýza (ROI, CBA)</span>.</li><li>Časový odhad a kľúčové riziká.</li></ul></div>" },
-            { id: 47, cat: "Skúškové 2024", icon: "fa-circle-question", color: "#eab308", q: "Popíšte základné otázky, ktoré musí organizácia riešiť v súvislosti s projektom IS.", a: "<ul class='list-none space-y-3 text-sm'><li><span class='hl-purple inline-block mb-1'>Make or Buy:</span><br> Vyvinieme IS interne na mieru, alebo kúpime hotové \"krabicové\" riešenie?</li><li><span class='hl-blue inline-block mb-1'>Outsourcing:</span><br> Komu zveríme prevádzku (Cloud vs. vlastné servery)?</li><li><span class='hl-orange inline-block mb-1'>Financovanie:</span><br> Aké máme finančné kapacity?</li><li><span class='hl-red inline-block mb-1'>Migrácia a Školenia:</span><br> Ako prebehne prenos starých dát a zaškolenie ľudí?</li></ul>" },
-            { id: 48, cat: "Skúškové 2024", icon: "fa-link", color: "#eab308", q: "Charakterizujte modelovanie procesov pomocou hodnotových reťazcov a ich úrovne.", a: "<b class='block mb-2 text-sm text-gray-800'>Hodnotový reťazec (M. Porter) rozdeľuje aktivity na:</b><ul class='list-disc pl-5 space-y-1.5 text-sm mb-4'><li><span class='hl-blue'>Primárne</span> (výroba, predaj, logistika)</li><li><span class='hl-green'>Podporné</span> (HR, IT, infraštruktúra)</li></ul><div class='bg-gray-50 p-3 rounded-lg border-l-4 border-gray-400 text-sm'><b class='block mb-2 text-gray-700'>Úrovne dekompozície:</b><ol class='list-decimal pl-5 space-y-1'><li>Mapa procesov podniku</li><li>Hlavné biznis procesy</li><li>Subprocesy</li><li>Konkrétne aktivity zamestnanca</li></ol></div>" },
-            { id: 49, cat: "Skúškové 2024", icon: "fa-coins", color: "#eab308", q: "Charakterizujte metódu REA a popíšte jej hlavné princípy.", a: "<b class='block mb-3 text-sm text-gray-700'>REA nahrádza klasické účtovníctvo faktickým zaznamenávaním <span class='hl-green'>reálnych hospodárskych dejov</span>.</b><div class='space-y-3 text-sm'><div class='flex gap-3 items-center bg-blue-50/50 p-2 rounded-lg border-l-4 border-blue-400'><b class='text-blue-700 w-8 text-center text-lg'>R</b><span><b>Resources (Zdroje):</b> Aktíva (tovar, peniaze).</span></div><div class='flex gap-3 items-center bg-purple-50/50 p-2 rounded-lg border-l-4 border-purple-400'><b class='text-purple-700 w-8 text-center text-lg'>E</b><span><b>Events (Udalosti):</b> Deje meniace stav zdrojov (predaj).</span></div><div class='flex gap-3 items-center bg-orange-50/50 p-2 rounded-lg border-l-4 border-orange-400'><b class='text-orange-700 w-8 text-center text-lg'>A</b><span><b>Agents (Agenti):</b> Subjekty vykonávajúce udalosti.</span></div></div>" },
-            { id: 50, cat: "Skúškové 2024", icon: "fa-calendar-check", color: "#eab308", q: "Čo obsahuje Časový plán projektu IS a v akých formách sa spracováva?", a: "<div class='space-y-3 text-sm'><div class='bg-blue-50/50 p-3 rounded-lg border-l-4 border-blue-500'><b class='text-blue-700 block mb-2'>Obsah:</b><ul class='list-disc pl-5 space-y-1.5'><li><span class='hl-blue'>Štruktúra prác (WBS)</span></li><li>Odhady trvania úloh a ich <span class='hl-orange'>logické nadväznosti</span></li><li>Pridelené zdroje a kontrolné milníky</li></ul></div><div class='bg-green-50/50 p-3 rounded-lg border-l-4 border-green-500'><b class='text-green-700 block mb-1'>Formy:</b><span class='hl-green'>Ganttov diagram</span>, sieťové grafy (CPM/PERT) alebo míľnikový plán.</div></div>" },
-            { id: 51, cat: "Skúškové 2024", icon: "fa-database", color: "#eab308", q: "Čo sú to prevody (migrácia) dát v IS, kto ich pripravuje a aké majú riziká?", a: "<b class='block mb-2 text-gray-800 text-sm'>Čo to je:</b><p class='text-sm mb-3'>Jednorazový presun dát zo starého (Legacy) systému do nového. Pripravujú to analytici, programátori a kľúčoví užívatelia (čistenie dát).</p><div class='bg-red-50/50 p-3 rounded-lg border-l-4 border-red-500 text-sm'><b class='text-red-700 block mb-1'>Riziká:</b><span class='hl-red'>Strata, poškodenie alebo duplicita dát</span>, nekonzistencia štruktúr (zlé formáty a nekompatibilita).</div>" },
-            { id: 52, cat: "Skúškové 2024", icon: "fa-cubes", color: "#eab308", q: "Čo je to Podrobný rozpis prác (WBS), v akej etape sa robí a k čomu slúži?", a: "<b class='block mb-2 text-sm text-gray-800'>WBS (Work Breakdown Structure):</b><p class='text-sm mb-3'><span class='hl-blue'>Hierarchická dekompozícia</span> celkového cieľa projektu na menšie, zvládnuteľné balíky prác.</p><ul class='list-disc pl-5 space-y-2 text-sm'><li><b>Kedy:</b> Vo <span class='hl-orange'>fáze plánovania</span>.</li><li><b>Účel:</b> Slúži ako základňa pre tvorbu presného harmonogramu, odhad nákladov a delegovanie zodpovedností.</li></ul>" },
-            { id: 53, cat: "Skúškové 2024", icon: "fa-compass-drafting", color: "#eab308", q: "Popíšte základné metodológie návrhu IS.", a: "<div class='space-y-3 text-sm'><div class='bg-gray-50 p-3 rounded-lg border-l-4 border-gray-400'><b class='text-gray-700 block mb-1'>Štruktúrovaná</b>Tradičná. Rieši oddelene dáta (ERD modely) a funkcie (DFD toky).</div><div class='bg-purple-50/50 p-3 rounded-lg border-l-4 border-purple-500'><b class='text-purple-700 block mb-1'>Objektová</b>Moderná. Spája dáta a funkcie do objektov, čo umožňuje znovupoužiteľnosť kódu. Nástrojom je <span class='hl-green'>UML</span>.</div><div class='bg-orange-50/50 p-3 rounded-lg border-l-4 border-orange-400'><b class='text-orange-700 block mb-1'>Rýchle/Agilné (RAD)</b>Dôraz na rýchle prototypovanie a zapojenie užívateľa.</div></div>" },
-            { id: 54, cat: "Skúškové 2024", icon: "fa-shoe-prints", color: "#eab308", q: "Aké sú etapy realizácie projektu IS?", a: "<ol class='list-decimal pl-5 space-y-2 text-sm'><li><span class='hl-blue'>Analýza</span> a špecifikácia požiadaviek</li><li><span class='hl-purple'>Návrh (Dizajn)</span> architektúry a databáz</li><li><span class='hl-orange'>Implementácia</span> (Samotné programovanie)</li><li><span class='hl-red'>Testovanie</span> (Jednotkové, Systémové, Akceptačné)</li><li><span class='hl-green'>Nasadenie</span> do produkcie a migrácia dát</li><li>Prevádzka a údržba</li></ol>" },
-            { id: 55, cat: "Skúškové 2024", icon: "fa-handshake", color: "#eab308", q: "Čo má obsahovať Zmluva o dodávke IS?", a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li><span class='hl-purple'>Predmet plnenia</span> (presná špecifikácia IS)</li><li><span class='hl-red'>Cena a platobný kalendár</span></li><li>Harmonogram a <span class='hl-blue'>termíny dodania</span></li><li>Akceptačné kritériá (kedy sa považuje za hotové)</li><li>Vlastnícke autorské práva</li><li>SLA (úroveň podpory) a <span class='hl-orange'>zmluvné pokuty</span></li></ul>" },
-            { id: 56, cat: "Skúškové 2024", icon: "fa-bullseye", color: "#eab308", q: "Čo obsahuje Cieľový koncept (Projekt) riešenia IS?", a: "<b class='block mb-2 text-sm text-gray-800'>Detailný technický a biznisový plán, <span class='hl-purple'>ako bude nový IS reálne fungovať</span>.</b><div class='bg-gray-50 p-3 rounded-lg border-l-4 border-gray-400 text-sm'><b class='block mb-2 text-gray-700'>Zahŕňa:</b><ul class='list-disc pl-5 space-y-1.5'><li>Architektúru (UML modely)</li><li>Návrh databáz a dátových štruktúr</li><li>Mapovanie procesov (BPMN)</li><li>Návrh používateľského rozhrania (UI/UX)</li><li>Bezpečnostný koncept a plán integrácie</li></ul></div>" },
-            { id: 57, cat: "Skúškové 2024", icon: "fa-chart-line", color: "#eab308", q: "Popíšte ukazovatele ekonomickej efektívnosti a užívateľského hodnotenia IS.", a: "<div class='space-y-3 text-sm'><div class='bg-green-50/50 p-3 rounded-lg border-l-4 border-green-500'><b class='text-green-700 block mb-2'>Ekonomické</b><ul class='space-y-1.5'><li><span class='hl-green inline-block px-1'>ROI</span> (Návratnosť investícií)</li><li><span class='hl-blue inline-block px-1'>NPV</span> (Čistá súčasná hodnota)</li><li>Doba návratnosti a TCO (Celkové náklady)</li></ul></div><div class='bg-purple-50/50 p-3 rounded-lg border-l-4 border-purple-500'><b class='text-purple-700 block mb-2'>Užívateľské</b><ul class='space-y-1.5'><li><span class='hl-purple inline-block px-1'>Rýchlosť odozvy</span></li><li>Miera chýb (bug rate)</li><li>Zrýchlenie práce zamestnancov</li><li>Užívateľská spokojnosť</li></ul></div></div>" },
-            { id: 58, cat: "Skúškové 2024", icon: "fa-person-running", color: "#eab308", q: "Čo sú to agilné metodiky vývoja IS a aké poznáme?", a: "<b class='block mb-3 text-sm text-gray-800'>Agilita znamená flexibilitu, iteratívny vývoj v malých krokoch a intenzívnu komunikáciu so zákazníkom.</b><div class='space-y-3 text-sm'><div class='bg-blue-50/50 p-3 rounded-lg border-l-4 border-blue-500'><b class='text-blue-700 block mb-1'>Scrum</b>Vývoj beží vo fixných šprintoch (1-4 týždne), s rolami ako Scrum Master a Product Owner.</div><div class='bg-green-50/50 p-3 rounded-lg border-l-4 border-green-500'><b class='text-green-700 block mb-1'>Kanban</b>Vizuálna tabuľa s plynulým tokom prác a WIP limitmi (obmedzenie počtu úloh).</div></div>" },
-            { id: 59, cat: "Skúškové 2024", icon: "fa-code-compare", color: "#eab308", q: "Aký je rozdiel medzi objektovým a štruktúrovaným prístupom k projektovaniu IS?", a: "<div class='space-y-3 text-sm'><div class='bg-gray-50 p-3 rounded-lg border-l-4 border-gray-400'><b class='text-gray-700 block mb-1'>Štruktúrovaný</b>Oddelene modeluje dáta (ERD) a funkcie/procesy (DFD). Vhodné skôr pre staršie a menšie IS.</div><div class='bg-blue-50/50 p-3 rounded-lg border-l-4 border-blue-500'><b class='text-blue-700 block mb-1'>Objektový</b>Zlučuje dáta a funkcie do <span class='hl-blue'>objektov</span>. Využíva <span class='hl-green'>UML</span>. Je flexibilný a umožňuje znovupoužiteľnosť kódu.</div></div>" },
-            { id: 60, cat: "Skúškové 2024", icon: "fa-book-open-reader", color: "#eab308", q: "Vysvetlite pojmy: model, modelovanie, metóda, metodika, metodológia.", a: "<div class='space-y-2.5 text-sm'><div class='flex gap-3 items-center'><span class='hl-blue w-28 text-center shrink-0 py-1'>Model</span><span class='leading-tight'>Zjednodušená abstrakcia reality (napr. UML diagram).</span></div><div class='flex gap-3 items-center'><span class='hl-green w-28 text-center shrink-0 py-1'>Modelovanie</span><span class='leading-tight'>Samotný proces tvorby modelu.</span></div><div class='flex gap-3 items-center'><span class='hl-purple w-28 text-center shrink-0 py-1'>Metóda</span><span class='leading-tight'>Konkrétny postup pre 1 špecifickú úlohu (napr. CPM).</span></div><div class='flex gap-3 items-center'><span class='hl-orange w-28 text-center shrink-0 py-1'>Metodika</span><span class='leading-tight'>Ucelený súbor metód a pravidiel pre celý projekt.</span></div><div class='flex gap-3 items-center'><span class='hl-red w-28 text-center shrink-0 py-1'>Metodológia</span><span class='leading-tight'>Veda študujúca metodiky.</span></div></div>" },
-            { id: 61, cat: "Skúškové 2024", icon: "fa-network-wired", color: "#eab308", q: "Popíšte architektúru Klient/Server a rozdiel medzi tenkým a hrubým klientom.", a: "<b class='block mb-3 text-sm text-gray-800'>V architektúre C/S <span class='hl-blue'>Server</span> poskytuje dáta a výpočty, <span class='hl-green'>Klient</span> o ne žiada a zobrazuje ich.</b><div class='space-y-3 text-sm'><div class='bg-orange-50/50 p-3 rounded-lg border-l-4 border-orange-400'><b class='text-orange-700 block mb-1'>Tenký klient</b>Nemá vlastnú logiku, len zobrazuje GUI (napr. webový prehliadač). Všetko počíta server.</div><div class='bg-purple-50/50 p-3 rounded-lg border-l-4 border-purple-500'><b class='text-purple-700 block mb-1'>Hrubý klient</b>Nainštalovaná aplikácia (napr. MS Word). Časť výpočtov robí lokálne a odťažuje tým server.</div></div>" },
-            { id: 62, cat: "Skúškové 2024", icon: "fa-toolbox", color: "#eab308", q: "Ako fungujú CASE nástroje v etapách životného cyklu IS?", a: "<b class='block mb-2 text-sm text-gray-800'>CASE (Computer-Aided Software Engineering) sú softvéry, ktoré pomáhajú analytikom a vývojárom budovať IS.</b><div class='space-y-3 text-sm mt-3'><div class='bg-blue-50/50 p-3 rounded-lg border-l-4 border-blue-500'><b class='text-blue-700 block mb-1'>Upper CASE</b>Podporujú <b>analytickú fázu</b> a návrh (tvorba UML, ERD, modelovanie procesov).</div><div class='bg-green-50/50 p-3 rounded-lg border-l-4 border-green-500'><b class='text-green-700 block mb-1'>Lower CASE</b>Podporujú fázu <b>implementácie</b> (generovanie kódu z modelov, testovanie, údržba).</div></div>" },
-            { id: 63, cat: "Skúškové 2024", icon: "fa-diagram-project", color: "#eab308", q: "Charakterizujte pojmy ontológia, doména, BPM. Aký je rozdiel medzi IDEF a UML?", a: "<div class='space-y-3 text-sm'><div class='bg-gray-50 p-3 rounded-lg border-l-4 border-gray-400'><ul class='space-y-2'><li><span class='hl-blue'>Doména:</span> Záujmová oblasť (napr. bankovníctvo).</li><li><span class='hl-purple'>Ontológia:</span> Slovník pojmov a vzťahov v doméne.</li><li><span class='hl-green'>BPM:</span> Riadenie a optimalizácia firemných procesov.</li></ul></div><div class='bg-pink-50/50 p-3 rounded-lg border-l-4 border-pink-400'><b class='text-pink-700 block mb-1'>IDEF</b>Striktná inžinierska hierarchická notácia (Vstup, Výstup, Riadenie, Mechanizmus).</div><div class='bg-indigo-50/50 p-3 rounded-lg border-l-4 border-indigo-400'><b class='text-indigo-700 block mb-1'>UML</b>Svetový štandard pre objektovo-orientované vizuálne modelovanie.</div></div>" }
+            { id: 41, cat: "Skúška", icon: "fa-pen-to-square", color: "#eab308", 
+              q: "Uveďte definíciu projektu a jeho všeobecnú charakteristiku.", 
+              a: "Projekt je <span class='hl-blue'>jednorazový</span>, časovo a nákladovo ohraničený proces, ktorý má za cieľ vytvoriť <span class='hl-green'>unikátny výstup</span>.<br><br><b class='block mb-2 text-gray-800'>Hlavné znaky:</b><ul class='list-disc pl-5 space-y-1.5 text-sm'><li>Jasný cieľ</li><li>Obmedzené zdroje (čas, peniaze)</li><li><span class='hl-red'>Riziko a neistota</span></li><li>Špecifická organizácia</li></ul>" },
+            { id: 42, cat: "Skúška", icon: "fa-sitemap", color: "#eab308", 
+              q: "Charakterizujte jednotlivé typy projektových organizačných štruktúr.", 
+              a: "<div class='space-y-3 text-sm'><div class='p-3 bg-blue-50/50 rounded-lg border-l-4 border-blue-500'><b class='text-blue-700 block mb-1'>Funkcionálna</b>PM má veľmi slabú právomoc, členovia sú riadení líniovým manažérom.</div><div class='p-3 bg-purple-50/50 rounded-lg border-l-4 border-purple-500'><b class='text-purple-700 block mb-1'>Projektová (Čistá)</b>PM má plnú moc, tím je vyčlenený iba pre projekt.</div><div class='p-3 bg-green-50/50 rounded-lg border-l-4 border-green-500'><b class='text-green-700 block mb-1'>Maticová</b>Zamestnanci majú 2 šéfov (líniového aj projektového). Kompromis pre zdieľanie zdrojov.</div></div>" },
+            { id: 43, cat: "Skúška", icon: "fa-server", color: "#eab308", 
+              q: "Aké vlastnosti má imati IKT, aby prinášala pozitívny efekt v organizácii?", 
+              a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li><span class='hl-blue'>Súlad s biznis stratégiou</span> (Business-IT alignment).</li><li>Znižovanie nákladov a zvyšovanie produktivity.</li><li><span class='hl-green'>Podpora rozhodovania</span> (Business Intelligence).</li><li>Bezpečnosť, flexibilita a používateľská prívetivosť.</li></ul>" },
+            { id: 44, cat: "Skúška", icon: "fa-laptop-code", color: "#eab308", 
+              q: "Popíšte zvláštnosti projektov IS v porovnaní s klasickými projektmi.", 
+              a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li><span class='hl-purple'>Nehmotnosť výstupu:</span> Softvér nie je fyzicky vidieť.</li><li><span class='hl-red'>Vysoká komplexita:</span> Množstvo neviditeľných logických väzieb.</li><li><span class='hl-orange'>Rýchle zmeny technológií:</span> Riziko zastarania počas vývoja.</li><li>Nutnosť neustálej komunikácie s budúcim používateľom.</li></ul>" },
+            { id: 45, cat: "Skúška", icon: "fa-triangle-exclamation", color: "#eab308", 
+              q: "Aké sú hlavné riziká projektu IS (z pohľadu dodávateľa a odberateľa)?", 
+              a: "<div class='space-y-3 text-sm'><div class='bg-red-50/50 p-3 rounded-lg border-l-4 border-red-500'><b class='text-red-700 block mb-1'>Odberateľ (Zákazník)</b>Prekročenie rozpočtu, nedodanie funkcií, <span class='hl-red'>Vendor lock-in</span> (závislosť na dodávateľovi), odpor zamestnancov.</div><div class='bg-orange-50/50 p-3 rounded-lg border-l-4 border-orange-500'><b class='text-orange-700 block mb-1'>Dodávateľ (IT firma)</b><span class='hl-orange'>Nejasné zadanie (Scope creep)</span>, nereálne termíny, nedostatok expertov.</div></div>" },
+            { id: 46, cat: "Skúška", icon: "fa-file-signature", color: "#eab308", 
+              q: "Definujte zmysel a obsah Štúdie uskutočniteľnosti (Feasibility Study).", 
+              a: "<b class='block mb-2 text-sm text-gray-800'>Zmysel: Poskytnúť manažmentu tvrdé dáta pre rozhodnutie, <span class='hl-green'>či projekt vôbec začať</span>.</b><div class='bg-gray-50 p-3 rounded-lg border-l-4 border-gray-400 text-sm'><b class='block mb-2 text-gray-700'>Obsah:</b><ul class='list-disc pl-5 space-y-1.5'><li>Analýza súčasného stavu a alternatív.</li><li><span class='hl-blue'>Technologická uskutočniteľnosť</span>.</li><li><span class='hl-orange'>Finančná analýza (ROI, CBA)</span>.</li><li>Časový odhad a kľúčové riziká.</li></ul></div>" },
+            { id: 47, cat: "Skúška", icon: "fa-circle-question", color: "#eab308", 
+              q: "Popíšte základné otázky, ktoré musí organizácia riešiť v súvislosti s projektom IS.", 
+              a: "<ul class='list-none space-y-3 text-sm'><li><span class='hl-purple inline-block mb-1'>Make or Buy:</span><br> Vyvinieme IS interne na mieru, alebo kúpime hotové \"krabicové\" riešenie?</li><li><span class='hl-blue inline-block mb-1'>Outsourcing:</span><br> Komu zveríme prevádzku (Cloud vs. vlastné servery)?</li><li><span class='hl-orange inline-block mb-1'>Financovanie:</span><br> Aké máme finančné kapacity?</li><li><span class='hl-red inline-block mb-1'>Migrácia a Školenia:</span><br> Ako prebehne prenos starých dát a zaškolenie ľudí?</li></ul>" },
+            { id: 48, cat: "Skúška", icon: "fa-link", color: "#eab308", 
+              q: "Charakterizujte modelovanie procesov pomocou hodnotových reťazcov a ich úrovne.", 
+              a: "<b class='block mb-2 text-sm text-gray-800'>Hodnotový reťazec (M. Porter) rozdeľuje aktivity na:</b><ul class='list-disc pl-5 space-y-1.5 text-sm mb-4'><li><span class='hl-blue'>Primárne</span> (výroba, predaj, logistika)</li><li><span class='hl-green'>Podporné</span> (HR, IT, infraštruktúra)</li></ul><div class='bg-gray-50 p-3 rounded-lg border-l-4 border-gray-400 text-sm'><b class='block mb-2 text-gray-700'>Úrovne dekompozície:</b><ol class='list-decimal pl-5 space-y-1'><li>Mapa procesov podniku</li><li>Hlavné biznis procesy</li><li>Subprocesy</li><li>Konkrétne aktivity zamestnanca</li></ol></div>" },
+            { id: 49, cat: "Skúška", icon: "fa-coins", color: "#eab308", 
+              q: "Charakterizujte metódu REA a popíšte jej hlavné princípy.", 
+              a: "<b class='block mb-3 text-sm text-gray-700'>REA nahrádza klasické účtovníctvo faktickým zaznamenávaním <span class='hl-green'>reálnych hospodárskych dejov</span>.</b><div class='space-y-3 text-sm'><div class='flex gap-3 items-center bg-blue-50/50 p-2 rounded-lg border-l-4 border-blue-400'><b class='text-blue-700 w-8 text-center text-lg'>R</b><span><b>Resources (Zdroje):</b> Aktíva (tovar, peniaze).</span></div><div class='flex gap-3 items-center bg-purple-50/50 p-2 rounded-lg border-l-4 border-purple-400'><b class='text-purple-700 w-8 text-center text-lg'>E</b><span><b>Events (Udalosti):</b> Deje meniace stav zdrojov (predaj).</span></div><div class='flex gap-3 items-center bg-orange-50/50 p-2 rounded-lg border-l-4 border-orange-400'><b class='text-orange-700 w-8 text-center text-lg'>A</b><span><b>Agents (Agenti):</b> Subjekty vykonávajúce udalosti.</span></div></div>" },
+            { id: 50, cat: "Skúška", icon: "fa-calendar-check", color: "#eab308", 
+              q: "Čo obsahuje Časový plán projektu IS a v akých formách sa spracováva?", 
+              a: "<div class='space-y-3 text-sm'><div class='bg-blue-50/50 p-3 rounded-lg border-l-4 border-blue-500'><b class='text-blue-700 block mb-2'>Obsah:</b><ul class='list-disc pl-5 space-y-1.5'><li><span class='hl-blue'>Štruktúra prác (WBS)</span></li><li>Odhady trvania úloh a ich <span class='hl-orange'>logické nadväznosti</span></li><li>Pridelené zdroje a kontrolné milníky</li></ul></div><div class='bg-green-50/50 p-3 rounded-lg border-l-4 border-green-500'><b class='text-green-700 block mb-1'>Formy:</b><span class='hl-green'>Ganttov diagram</span>, sieťové grafy (CPM/PERT) alebo míľnikový plán.</div></div>" },
+            { id: 51, cat: "Skúška", icon: "fa-database", color: "#eab308", 
+              q: "Čo sú to prevody (migrácia) dát v IS, kto ich pripravuje a aké majú riziká?", 
+              a: "<b class='block mb-2 text-gray-800 text-sm'>Čo to je:</b><p class='text-sm mb-3'>Jednorazový presun dát zo starého (Legacy) systému do nového. Pripravujú to analytici, programátori a kľúčoví užívatelia (čistenie dát).</p><div class='bg-red-50/50 p-3 rounded-lg border-l-4 border-red-500 text-sm'><b class='text-red-700 block mb-1'>Riziká:</b><span class='hl-red'>Strata, poškodenie alebo duplicita dát</span>, nekonzistencia štruktúr (zlé formáty a nekompatibilita).</div>" },
+            { id: 52, cat: "Skúška", icon: "fa-cubes", color: "#eab308", 
+              q: "Čo je to Podrobný rozpis prác (WBS), v akej etape sa robí a k čomu slúži?", 
+              a: "<b class='block mb-2 text-sm text-gray-800'>WBS (Work Breakdown Structure):</b><p class='text-sm mb-3'><span class='hl-blue'>Hierarchická dekompozícia</span> celkového cieľa projektu na menšie, zvládnuteľné balíky prác.</p><ul class='list-disc pl-5 space-y-2 text-sm'><li><b>Kedy:</b> Vo <span class='hl-orange'>fáze plánovania</span>.</li><li><b>Účel:</b> Slúži ako základňa pre tvorbu presného harmonogramu, odhad nákladov a delegovanie zodpovedností.</li></ul>" },
+            { id: 53, cat: "Skúška", icon: "fa-compass-drafting", color: "#eab308", 
+              q: "Popíšte základné metodológie návrhu IS.", 
+              a: "<div class='space-y-3 text-sm'><div class='bg-gray-50 p-3 rounded-lg border-l-4 border-gray-400'><b class='text-gray-700 block mb-1'>Štruktúrovaná</b>Tradičná. Rieši oddelene dáta (ERD modely) a funkcie (DFD toky).</div><div class='bg-purple-50/50 p-3 rounded-lg border-l-4 border-purple-500'><b class='text-purple-700 block mb-1'>Objektová</b>Moderná. Spája dáta a funkcie do objektov, čo umožňuje znovupoužiteľnosť kódu. Nástrojom je <span class='hl-green'>UML</span>.</div><div class='bg-orange-50/50 p-3 rounded-lg border-l-4 border-orange-400'><b class='text-orange-700 block mb-1'>Rýchle/Agilné (RAD)</b>Dôraz na rýchle prototypovanie a zapojenie užívateľa.</div></div>" },
+            { id: 54, cat: "Skúška", icon: "fa-shoe-prints", color: "#eab308", 
+              q: "Aké sú etapy realizácie projektu IS?", 
+              a: "<ol class='list-decimal pl-5 space-y-2 text-sm'><li><span class='hl-blue'>Analýza</span> a špecifikácia požiadaviek</li><li><span class='hl-purple'>Návrh (Dizajn)</span> architektúry a databáz</li><li><span class='hl-orange'>Implementácia</span> (Samotné programovanie)</li><li><span class='hl-red'>Testovanie</span> (Jednotkové, Systémové, Akceptačné)</li><li><span class='hl-green'>Nasadenie</span> do produkcie a migrácia dát</li><li>Prevádzka a údržba</li></ol>" },
+            { id: 55, cat: "Skúška", icon: "fa-handshake", color: "#eab308", 
+              q: "Čo má obsahovať Zmluva o dodávke IS?", 
+              a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li><span class='hl-purple'>Predmet plnenia</span> (presná špecifikácia IS)</li><li><span class='hl-red'>Cena a platobný kalendár</span></li><li>Harmonogram a <span class='hl-blue'>termíny dodania</span></li><li>Akceptačné kritériá (kedy sa považuje za hotové)</li><li>Vlastnícke autorské práva</li><li>SLA (úroveň podpory) a <span class='hl-orange'>zmluvné pokuty</span></li></ul>" },
+            { id: 56, cat: "Skúška", icon: "fa-bullseye", color: "#eab308", 
+              q: "Čo obsahuje Cieľový koncept (Projekt) riešenia IS?", 
+              a: "<b class='block mb-2 text-sm text-gray-800'>Detailný technický a biznisový plán, <span class='hl-purple'>ako bude nový IS reálne fungovať</span>.</b><div class='bg-gray-50 p-3 rounded-lg border-l-4 border-gray-400 text-sm'><b class='block mb-2 text-gray-700'>Zahŕňa:</b><ul class='list-disc pl-5 space-y-1.5'><li>Architektúru (UML modely)</li><li>Návrh databáz a dátových štruktúr</li><li>Mapovanie procesov (BPMN)</li><li>Návrh používateľského rozhrania (UI/UX)</li><li>Bezpečnostný koncept a plán integrácie</li></ul></div>" },
+            { id: 57, cat: "Skúška", icon: "fa-chart-line", color: "#eab308", 
+              q: "Popíšte ukazovatele ekonomickej efektívnosti a užívateľského hodnotenia IS.", 
+              a: "<div class='space-y-3 text-sm'><div class='bg-green-50/50 p-3 rounded-lg border-l-4 border-green-500'><b class='text-green-700 block mb-2'>Ekonomické</b><ul class='space-y-1.5'><li><span class='hl-green inline-block px-1'>ROI</span> (Návratnosť investícií)</li><li><span class='hl-blue inline-block px-1'>NPV</span> (Čistá súčasná hodnota)</li><li>Doba návratnosti a TCO (Celkové náklady)</li></ul></div><div class='bg-purple-50/50 p-3 rounded-lg border-l-4 border-purple-500'><b class='text-purple-700 block mb-2'>Užívateľské</b><ul class='space-y-1.5'><li><span class='hl-purple inline-block px-1'>Rýchlosť odozvy</span></li><li>Miera chýb (bug rate)</li><li>Zrýchlenie práce zamestnancov</li><li>Užívateľská spokojnosť</li></ul></div></div>" },
+            { id: 58, cat: "Skúška", icon: "fa-person-running", color: "#eab308", 
+              q: "Čo sú to agilné metodiky vývoja IS a aké poznáme?", 
+              a: "<b class='block mb-3 text-sm text-gray-800'>Agilita znamená flexibilitu, iteratívny vývoj v malých krokoch a intenzívnu komunikáciu so zákazníkom.</b><div class='space-y-3 text-sm'><div class='bg-blue-50/50 p-3 rounded-lg border-l-4 border-blue-500'><b class='text-blue-700 block mb-1'>Scrum</b>Vývoj beží vo fixných šprintoch (1-4 týždne), s rolami ako Scrum Master a Product Owner.</div><div class='bg-green-50/50 p-3 rounded-lg border-l-4 border-green-500'><b class='text-green-700 block mb-1'>Kanban</b>Vizuálna tabuľa s plynulým tokom prác a WIP limitmi (obmedzenie počtu úloh).</div></div>" },
+            { id: 59, cat: "Skúška", icon: "fa-code-compare", color: "#eab308", 
+              q: "Aký je rozdiel medzi objektovým a štruktúrovaným prístupom k projektovaniu IS?", 
+              a: "<div class='space-y-3 text-sm'><div class='bg-gray-50 p-3 rounded-lg border-l-4 border-gray-400'><b class='text-gray-700 block mb-1'>Štruktúrovaný</b>Oddelene modeluje dáta (ERD) a funkcie/procesy (DFD). Vhodné skôr pre staršie a menšie IS.</div><div class='bg-blue-50/50 p-3 rounded-lg border-l-4 border-blue-500'><b class='text-blue-700 block mb-1'>Objektový</b>Zlučuje dáta a funkcie do <span class='hl-blue'>objektov</span>. Využíva <span class='hl-green'>UML</span>. Je flexibilný a umožňuje znovupoužiteľnosť kódu.</div></div>" },
+            { id: 60, cat: "Skúška", icon: "fa-book-open-reader", color: "#eab308", 
+              q: "Vysvetlite pojmy: model, modelovanie, metóda, metodika, metodológia.", 
+              a: "<div class='space-y-2.5 text-sm'><div class='flex gap-3 items-center'><span class='hl-blue w-28 text-center shrink-0 py-1'>Model</span><span class='leading-tight'>Zjednodušená abstrakcia reality (napr. UML diagram).</span></div><div class='flex gap-3 items-center'><span class='hl-green w-28 text-center shrink-0 py-1'>Modelovanie</span><span class='leading-tight'>Samotný proces tvorby modelu.</span></div><div class='flex gap-3 items-center'><span class='hl-purple w-28 text-center shrink-0 py-1'>Metóda</span><span class='leading-tight'>Konkrétny postup pre 1 špecifickú úlohu (napr. CPM).</span></div><div class='flex gap-3 items-center'><span class='hl-orange w-28 text-center shrink-0 py-1'>Metodika</span><span class='leading-tight'>Ucelený súbor metód a pravidiel pre celý projekt.</span></div><div class='flex gap-3 items-center'><span class='hl-red w-28 text-center shrink-0 py-1'>Metodológia</span><span class='leading-tight'>Veda študujúca metodiky.</span></div></div>" },
+            { id: 61, cat: "Skúška", icon: "fa-network-wired", color: "#eab308", 
+              q: "Popíšte architektúru Klient/Server a rozdiel medzi tenkým a hrubým klientom.", 
+              a: "<b class='block mb-3 text-sm text-gray-800'>V architektúre C/S <span class='hl-blue'>Server</span> poskytuje dáta a výpočty, <span class='hl-green'>Klient</span> o ne žiada a zobrazuje ich.</b><div class='space-y-3 text-sm'><div class='bg-orange-50/50 p-3 rounded-lg border-l-4 border-orange-400'><b class='text-orange-700 block mb-1'>Tenký klient</b>Nemá vlastnú logiku, len zobrazuje GUI (napr. webový prehliadač). Všetko počíta server.</div><div class='bg-purple-50/50 p-3 rounded-lg border-l-4 border-purple-500'><b class='text-purple-700 block mb-1'>Hrubý klient</b>Nainštalovaná aplikácia (napr. MS Word). Časť výpočtov robí lokálne a odťažuje tým server.</div></div>" },
+            { id: 62, cat: "Skúška", icon: "fa-toolbox", color: "#eab308", 
+              q: "Ako fungujú CASE nástroje v etapách životného cyklu IS?", 
+              a: "<b class='block mb-2 text-sm text-gray-800'>CASE (Computer-Aided Software Engineering) sú softvéry, ktoré pomáhajú analytikom a vývojárom budovať IS.</b><div class='space-y-3 text-sm mt-3'><div class='bg-blue-50/50 p-3 rounded-lg border-l-4 border-blue-500'><b class='text-blue-700 block mb-1'>Upper CASE</b>Podporujú <b>analytickú fázu</b> a návrh (tvorba UML, ERD, modelovanie procesov).</div><div class='bg-green-50/50 p-3 rounded-lg border-l-4 border-green-500'><b class='text-green-700 block mb-1'>Lower CASE</b>Podporujú fázu <b>implementácie</b> (generovanie kódu z modelov, testovanie, údržba).</div></div>" },
+            { id: 63, cat: "Skúška", icon: "fa-diagram-project", color: "#eab308", 
+              q: "Charakterizujte pojmy ontológia, doména, BPM. Aký je rozdiel medzi IDEF a UML?", 
+              a: "<div class='space-y-3 text-sm'><div class='bg-gray-50 p-3 rounded-lg border-l-4 border-gray-400'><ul class='space-y-2'><li><span class='hl-blue'>Doména:</span> Záujmová oblasť (napr. bankovníctvo).</li><li><span class='hl-purple'>Ontológia:</span> Slovník pojmov a vzťahov v doméne.</li><li><span class='hl-green'>BPM:</span> Riadenie a optimalizácia firemných procesov.</li></ul></div><div class='bg-pink-50/50 p-3 rounded-lg border-l-4 border-pink-400'><b class='text-pink-700 block mb-1'>IDEF</b>Striktná inžinierska hierarchická notácia (Vstup, Výstup, Riadenie, Mechanizmus).</div><div class='bg-indigo-50/50 p-3 rounded-lg border-l-4 border-indigo-400'><b class='text-indigo-700 block mb-1'>UML</b>Svetový štandard pre objektovo-orientované vizuálne modelovanie.</div></div>" }
         ];
 
         let qFilter = 'Všetky';
@@ -1012,72 +995,86 @@
                 return;
             }
             
-            let htmlBuffer = "";
             filtered.forEach(data => {
                 const isFlipped = flipped.has(data.id) ? 'flipped' : '';
                 const isStarredClass = starredCards.has(data.id) ? 'fa-solid fa-star text-yellow-500' : 'fa-regular fa-star text-gray-300 hover:text-yellow-400';
                 
-                htmlBuffer += `
-                <div class="flashcard-container" onclick="handleFlip(${data.id}, this, event)">
+                grid.innerHTML += `
+                <div class="flashcard-container" onclick="handleFlip(${data.id}, this)">
                     <div class="flashcard ${isFlipped}">
                         <div class="flashcard-front" style="border-top-color: ${data.color}">
-                            <div class="card-scroll-area flex flex-col justify-between">
-                                <i class="${data.icon} watermark"></i>
+                            <i class="${data.icon} watermark"></i>
+                            <div class="content-z flex flex-col h-full justify-between">
                                 <div>
                                     <div class="flex justify-between items-start mb-4">
-                                        <span class="text-xs font-bold px-2 py-1 rounded text-white shadow-sm" style="background-color: ${data.color}">${data.cat}</span>
+                                        <span class="text-xs font-bold px-2 py-1 rounded text-white" style="background-color: ${data.color}">${data.cat}</span>
                                         <div class="flex items-center gap-2 relative z-20">
-                                            <button onclick="toggleStar(${data.id}, event)" class="star-btn focus:outline-none transition-transform hover:scale-110" title="Pridať na precvičenie"><i class="${isStarredClass} text-lg"></i></button>
-                                            <span class="text-sm font-bold text-gray-400 border border-gray-200 bg-gray-50 px-2 py-1 rounded-full">#${data.id}</span>
+                                            <button onclick="toggleStar(${data.id}, event)" class="star-btn focus:outline-none transition-transform hover:scale-110" title="Pridať na precvičenie">
+                                                <i class="${isStarredClass} text-lg"></i>
+                                            </button>
+                                            <span class="text-sm font-bold text-gray-400 border border-gray-200 px-2 py-1 rounded-full">#${data.id}</span>
                                         </div>
                                     </div>
-                                    <h3 class="text-[1.05rem] md:text-lg font-bold text-gray-800 leading-snug">${data.q}</h3>
+                                    <h3 class="text-lg font-bold text-gray-800 leading-snug">${data.q}</h3>
                                 </div>
-                                <div class="text-center mt-4 text-sm text-gray-400 font-medium shrink-0 pt-2 border-t border-gray-50"><i class="fa-solid fa-hand-pointer"></i> Klikni pre odpoveď</div>
+                                <div class="text-center mt-4 text-sm text-gray-400 font-medium"><i class="fa-solid fa-hand-pointer"></i> Klikni pre odpoveď</div>
                             </div>
                         </div>
                         <div class="flashcard-back">
-                            <div class="card-scroll-area flex flex-col min-h-full">
-                                <i class="${data.icon} watermark"></i>
-                                <div class="text-xs text-gray-400 font-bold mb-4 pb-2 border-b border-gray-100 flex justify-between items-center shrink-0 z-20">
-                                    <span class="uppercase tracking-wider text-emerald-600">Odpoveď</span>
-                                    <div class="flex items-center gap-2">
-                                        <button onclick="toggleStar(${data.id}, event)" class="star-btn focus:outline-none transition-transform hover:scale-110"><i class="${isStarredClass} text-lg"></i></button>
-                                        <span>#${data.id}</span>
+                            <i class="${data.icon} watermark"></i>
+                            <div class="scroll-container">
+                                <div class="content-z flex flex-col min-h-full">
+                                    <div class="text-xs text-gray-400 font-bold mb-3 pb-2 border-b border-gray-100 flex justify-between items-center">
+                                        <span>Odpoveď</span>
+                                        <div class="flex items-center gap-2 relative z-20">
+                                            <button onclick="toggleStar(${data.id}, event)" class="star-btn focus:outline-none transition-transform hover:scale-110" title="Pridať na precvičenie">
+                                                <i class="${isStarredClass} text-lg"></i>
+                                            </button>
+                                            <span>#${data.id}</span>
+                                        </div>
                                     </div>
+                                    <div class="text-gray-700 leading-relaxed text-[15px] flex-grow">${data.a}</div>
                                 </div>
-                                <div class="text-gray-700 leading-relaxed flex-grow z-20">${data.a}</div>
                             </div>
                         </div>
                     </div>
                 </div>`;
             });
-            grid.innerHTML = htmlBuffer;
             updateProgress(filtered.length);
         }
 
         function toggleStar(id, event) {
-            event.stopPropagation(); 
-            if (starredCards.has(id)) { starredCards.delete(id); } else { starredCards.add(id); }
+            event.stopPropagation(); // Zabráni preklopeniu karty pri kliknutí na hviezdičku
+            if (starredCards.has(id)) {
+                starredCards.delete(id);
+            } else {
+                starredCards.add(id);
+            }
             localStorage.setItem('smartIsStarred', JSON.stringify([...starredCards]));
             renderOtazkyGrid();
         }
 
-        function handleFlip(id, el, event) {
-            if (window.getSelection && window.getSelection().toString().length > 0) return;
-            
+        function handleFlip(id, el) {
             const card = el.querySelector('.flashcard');
             card.classList.toggle('flipped');
-            if (card.classList.contains('flipped')) { flipped.add(id); } else { flipped.delete(id); }
-            
+            if (card.classList.contains('flipped')) {
+                flipped.add(id);
+            } else {
+                flipped.delete(id); // Aby sa progres správne aktualizoval pri otočení späť
+            }
+            // Zistíme len aktuálny počet na obrazovke pre progress bar
             const currentFilterCount = qFilter === 'Na precvičenie' ? starredCards.size : (qFilter === 'Všetky' ? dbOtazky.length : displayQ.filter(i => i.cat === qFilter).length);
             updateProgress(currentFilterCount);
         }
 
         function updateProgress(totalCurrentFilter = dbOtazky.length) {
+            // Rátame len tie karty, ktoré sú momentálne na obrazovke zobrazené a sú otočené
             let flippedInView = 0;
             const currentCardsIds = Array.from(document.querySelectorAll('.flashcard-container .text-sm.text-gray-400.border')).map(el => parseInt(el.innerText.replace('#', '')));
-            flipped.forEach(id => { if (currentCardsIds.includes(id)) flippedInView++; });
+            
+            flipped.forEach(id => {
+                if (currentCardsIds.includes(id)) flippedInView++;
+            });
 
             const t = totalCurrentFilter;
             const p = t === 0 ? 0 : Math.round((flippedInView/t)*100);
@@ -1088,7 +1085,7 @@
 
         function filterCards(cat) {
             qFilter = cat;
-            flipped.clear(); 
+            flipped.clear(); // Pri zmene filtra vyresetujeme zobrazený progress
             document.querySelectorAll('.btn-filter-q').forEach(b => {
                 b.classList.remove('active', 'bg-blue-600', 'text-white', 'bg-yellow-50', 'text-yellow-800', 'border-yellow-300', 'bg-amber-500', 'border-amber-500');
                 b.classList.add('hover:bg-gray-100', 'text-gray-700', 'border-gray-300');
@@ -1097,13 +1094,13 @@
                     if (cat === 'Na precvičenie') {
                         b.classList.remove('hover:bg-gray-100', 'text-gray-700', 'border-gray-300');
                         b.classList.add('bg-yellow-50', 'text-yellow-800', 'border-yellow-300');
-                    } else if (cat === 'Skúškové 2024') {
+                    } else if (cat === 'Skúška') {
                         b.classList.remove('hover:bg-gray-100', 'text-gray-700', 'border-gray-300');
                         b.classList.add('bg-amber-500', 'text-white', 'border-amber-500');
                     } else {
                         b.classList.add('active');
                     }
-                } else if (b.innerText.includes('Skúškové 2024')) {
+                } else if (b.innerText.includes('Skúškové')) {
                     b.classList.remove('hover:bg-gray-100', 'text-gray-700', 'border-gray-300');
                     b.classList.add('bg-amber-50', 'text-amber-800', 'border-amber-300', 'hover:bg-amber-100');
                 }
@@ -1119,8 +1116,10 @@
             renderOtazkyGrid();
         }
 
+        // INIT
         renderMetodikyCards('all');
         renderOtazkyGrid();
+
     </script>
 </body>
 </html>
