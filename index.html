@@ -1,14 +1,18 @@
-<!-- VERSION: 2.0 - HIGH-END FLASHCARDS DESIGN -->
+<!-- VERSION: 3.0 - ADDED NOTES PANEL -->
 <!DOCTYPE html>
 <html lang="sk" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projektové Riadenie - Smart IS (V2)</title>
+    <title>Projektové Riadenie - Smart IS (V3)</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Quill Editor for Notes -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 
     <script>
         tailwind.config = {
@@ -142,6 +146,12 @@
         .pros-item i { color: #10b981; margin-top: 3px; font-size: 0.85rem; }
         .cons-item { display: flex; align-items: start; gap: 8px; margin-bottom: 8px; }
         .cons-item i { color: #f43f5e; margin-top: 3px; font-size: 0.85rem; }
+
+        /* --- ŠTÝLY PRE POZNÁMKY (Quill) --- */
+        #editor-container { font-family: 'Inter', sans-serif; font-size: 15px; }
+        .ql-toolbar.ql-snow { border: none !important; border-bottom: 1px solid #e5e7eb !important; background-color: #f8fafc; border-radius: 0.75rem 0.75rem 0 0; padding: 12px !important; }
+        .ql-container.ql-snow { border: none !important; border-radius: 0 0 0.75rem 0.75rem; }
+        .ql-editor { min-height: 400px; padding: 1.5rem !important; }
     </style>
 </head>
 <body class="antialiased theme-dark" id="main-body">
@@ -158,6 +168,9 @@
                 </button>
                 <button id="nav-otazky" onclick="switchTab('otazky')" class="nav-switch-btn px-4 py-1.5 rounded-lg text-sm font-semibold text-slate-300 flex items-center gap-2 hover:text-white">
                     <i class="fa-solid fa-brain"></i> Tréning
+                </button>
+                <button id="nav-poznamky" onclick="switchTab('poznamky')" class="nav-switch-btn px-4 py-1.5 rounded-lg text-sm font-semibold text-slate-300 flex items-center gap-2 hover:text-white">
+                    <i class="fa-solid fa-note-sticky"></i> Poznámky
                 </button>
             </div>
         </div>
@@ -231,6 +244,29 @@
 
         <main class="flex-grow max-w-7xl mx-auto px-4 py-8 w-full">
             <div id="cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+        </main>
+    </div>
+
+    <!-- NOVÝ PANEL: POZNÁMKY -->
+    <div id="view-poznamky" class="hidden flex-grow flex flex-col w-full">
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 py-6">
+                <div class="flex items-center gap-3">
+                    <div class="bg-purple-600 text-white p-3 rounded-lg shadow-md">
+                        <i class="fa-solid fa-book-bookmark text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">Moje Poznámky</h2>
+                        <p class="text-sm text-gray-500 font-medium">Vlastné vysvetlivky a poznámky. Ukladajú sa automaticky do tvojho prehliadača.</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-grow max-w-5xl mx-auto px-4 py-8 w-full flex flex-col h-full">
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200 flex-grow flex flex-col" style="min-height: 500px;">
+                <div id="editor-container" class="flex-grow"></div>
+            </div>
         </main>
     </div>
 
@@ -309,21 +345,33 @@
             const body = document.getElementById('main-body');
             const viewMetodiky = document.getElementById('view-metodiky');
             const viewOtazky = document.getElementById('view-otazky');
+            const viewPoznamky = document.getElementById('view-poznamky');
+            
             const btnMetodiky = document.getElementById('nav-metodiky');
             const btnOtazky = document.getElementById('nav-otazky');
+            const btnPoznamky = document.getElementById('nav-poznamky');
+
+            // Reset tab visibility and button styles
+            viewMetodiky.classList.add('hidden');
+            viewOtazky.classList.add('hidden');
+            viewPoznamky.classList.add('hidden');
+            
+            btnMetodiky.classList.remove('active', 'text-white');
+            btnOtazky.classList.remove('active', 'text-white');
+            btnPoznamky.classList.remove('active', 'text-white');
 
             if (tab === 'metodiky') {
                 body.className = 'antialiased theme-dark';
                 viewMetodiky.classList.remove('hidden');
-                viewOtazky.classList.add('hidden');
                 btnMetodiky.classList.add('active', 'text-white');
-                btnOtazky.classList.remove('active', 'text-white');
-            } else {
+            } else if (tab === 'otazky') {
                 body.className = 'antialiased theme-light';
-                viewMetodiky.classList.add('hidden');
                 viewOtazky.classList.remove('hidden');
                 btnOtazky.classList.add('active', 'text-white');
-                btnMetodiky.classList.remove('active', 'text-white');
+            } else if (tab === 'poznamky') {
+                body.className = 'antialiased theme-light';
+                viewPoznamky.classList.remove('hidden');
+                btnPoznamky.classList.add('active', 'text-white');
             }
         }
 
@@ -826,7 +874,7 @@
               q: "Aké sú fáze PRINCE2 projektu?", 
               a: "<ol class='list-decimal pl-5 space-y-1.5 text-sm'><li>Zahájenie projektu (SU)</li><li>Nastavenie smeru projektu (DP)</li><li><span class='hl-orange'>Iniciácia projektu (IP)</span></li><li><span class='hl-blue'>Riadenie etáp (CS)</span></li><li>Riadenie dodávky produktov (MP)</li><li>Riadenie prechodu medzi etapami (SB)</li><li><span class='hl-red'>Uzavretie projektu (CP)</span></li></ol>" },
             { id: 16, cat: "Metodiky a Štandardy", icon: "fa-building", color: "#a855f7", 
-              q: "V akých typoch projektov sa PRINCE2 najčastejšie používa?", 
+              q: "V akých typoch projects sa PRINCE2 najčastejšie používa?", 
               a: "<ul class='list-disc pl-5 space-y-2 text-sm'><li><span class='hl-purple'>Stredné a veľké projekty</span>.</li><li><span class='hl-blue'>Verejná a štátna správa</span> (eurofondy).</li><li>Kde je kritická <span class='hl-orange'>formálna dokumentácia</span>.</li><li>Projekty s jasne definovaným koncovým produktom.</li></ul>" },
             { id: 17, cat: "Metodiky a Štandardy", icon: "fa-globe", color: "#a855f7", 
               q: "Čo je PMI a čo znamená PMBOK?", 
@@ -940,7 +988,7 @@
               a: "<b class='block mb-2 text-sm text-gray-800'>WBS (Work Breakdown Structure):</b><p class='text-sm mb-3'><span class='hl-blue'>Hierarchická dekompozícia</span> celkového cieľa projektu na menšie, zvládnuteľné balíky prác.</p><ul class='list-disc pl-5 space-y-2 text-sm'><li><b>Kedy:</b> Vo <span class='hl-orange'>fáze plánovania</span>.</li><li><b>Účel:</b> Slúži ako základňa pre tvorbu presného harmonogramu, odhad nákladov a delegovanie zodpovedností.</li></ul>" },
             { id: 53, cat: "Skúška", icon: "fa-compass-drafting", color: "#eab308", 
               q: "Popíšte základné metodológie návrhu IS.", 
-              a: "<div class='space-y-3 text-sm'><div class='bg-gray-50 p-3 rounded-lg border-l-4 border-gray-400'><b class='text-gray-700 block mb-1'>Štruktúrovaná</b>Tradičná. Rieši oddelene dáta (ERD modely) a funkcie (DFD toky).</div><div class='bg-purple-50/50 p-3 rounded-lg border-l-4 border-purple-500'><b class='text-purple-700 block mb-1'>Objektová</b>Moderná. Spája dáta a funkcie do objektov, čo umožňuje znovupoužiteľnosť kódu. Nástrojom je <span class='hl-green'>UML</span>.</div><div class='bg-orange-50/50 p-3 rounded-lg border-l-4 border-orange-400'><b class='text-orange-700 block mb-1'>Rýchle/Agilné (RAD)</b>Dôraz na rýchle prototypovanie a zapojenie užívateľa.</div></div>" },
+              a: "<div class='space-y-3 text-sm'><div class='bg-gray-50 p-3 rounded-lg border-l-4 border-gray-400'><b class='text-gray-700 block mb-1'>Štruktúrovaná</b>Tradičná. Rieši oddelene dáta (ERD modely) a funkcie (DFD toky).</div><div class='bg-purple-50/50 p-3 rounded-lg border-l-4 border-purple-500'><b class='text-purple-700 block mb-1'>Objektový</b>Moderná. Spája dáta a funkcie do objektov, čo umožňuje znovupoužiteľnosť kódu. Nástrojom je <span class='hl-green'>UML</span>.</div><div class='bg-orange-50/50 p-3 rounded-lg border-l-4 border-orange-400'><b class='text-orange-700 block mb-1'>Rýchle/Agilné (RAD)</b>Dôraz na rýchle prototypovanie a zapojenie užívateľa.</div></div>" },
             { id: 54, cat: "Skúška", icon: "fa-shoe-prints", color: "#eab308", 
               q: "Aké sú etapy realizácie projektu IS?", 
               a: "<ol class='list-decimal pl-5 space-y-2 text-sm'><li><span class='hl-blue'>Analýza</span> a špecifikácia požiadaviek</li><li><span class='hl-purple'>Návrh (Dizajn)</span> architektúry a databáz</li><li><span class='hl-orange'>Implementácia</span> (Samotné programovanie)</li><li><span class='hl-red'>Testovanie</span> (Jednotkové, Systémové, Akceptačné)</li><li><span class='hl-green'>Nasadenie</span> do produkcie a migrácia dát</li><li>Prevádzka a údržba</li></ol>" },
@@ -1119,6 +1167,34 @@
         // INIT
         renderMetodikyCards('all');
         renderOtazkyGrid();
+
+        /* --- QUILL EDITOR INIT (POZNÁMKY) --- */
+        var quill = new Quill('#editor-container', {
+            theme: 'snow',
+            placeholder: 'Sem si môžeš písať vlastné poznámky, vysvetlenia, formátovať text, používať farby...',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline', 'strike'],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'align': [] }],
+                    ['link', 'image', 'code-block'],
+                    ['clean']
+                ]
+            }
+        });
+
+        // Načítanie uložených poznámok po štarte
+        const savedNotes = localStorage.getItem('smartIsNotes');
+        if (savedNotes) {
+            quill.root.innerHTML = savedNotes;
+        }
+
+        // Automatické ukladanie poznámok pri každej zmene
+        quill.on('text-change', function() {
+            localStorage.setItem('smartIsNotes', quill.root.innerHTML);
+        });
 
     </script>
 </body>
