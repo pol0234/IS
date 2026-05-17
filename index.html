@@ -94,12 +94,21 @@
             border-radius: 1rem; 
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); 
             background-color: white; 
-            border-top: 6px solid #3b82f6; 
             padding: 1.5rem;
+            overflow: hidden; /* Ensure accent doesn't leak */
+        }
+
+        .card-accent {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            z-index: 30;
         }
 
         @media (max-width: 640px) {
-            .flashcard-front, .flashcard-back { padding: 1rem; }
+            .flashcard-front, .flashcard-back { padding: 1.25rem; padding-top: 1.5rem; }
         }
         
         .flashcard-front { 
@@ -111,7 +120,6 @@
         
         .flashcard-back { 
             transform: rotateY(180deg); 
-            border-top-color: #10b981; 
             z-index: 1; 
         }
 
@@ -124,6 +132,7 @@
             overscroll-behavior: contain;
             touch-action: pan-y;
             padding: 0;
+            padding-top: 0.5rem;
             display: flex;
             flex-direction: column;
         }
@@ -136,9 +145,9 @@
             pointer-events: none;
         }
 
-        .watermark { position: absolute; bottom: -20px; right: -20px; font-size: 8rem; color: rgba(0,0,0,0.03); z-index: 0; pointer-events: none; }
+        .watermark { position: absolute; bottom: -15px; right: -15px; font-size: 7rem; color: rgba(0,0,0,0.025); z-index: 0; pointer-events: none; }
         @media (max-width: 640px) {
-            .watermark { font-size: 5rem; bottom: -10px; right: -10px; }
+            .watermark { font-size: 4.5rem; bottom: -10px; right: -10px; }
         }
 
         .content-z { position: relative; z-index: 10; height: 100%; }
@@ -151,7 +160,7 @@
             white-space: nowrap;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none; /* Firefox */
-            padding-bottom: 4px;
+            padding-bottom: 8px;
         }
         .filter-scroll::-webkit-scrollbar { display: none; }
 
@@ -162,8 +171,8 @@
         .nav-switch-btn.active { background-color: #3b82f6; color: white; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
         
         @media (max-width: 640px) {
-            .nav-switch-btn { padding-left: 0.75rem; padding-right: 0.75rem; font-size: 0.75rem; }
-            .nav-switch-btn i { font-size: 1rem; }
+            .nav-switch-btn { padding-left: 1rem; padding-right: 1rem; height: 40px; }
+            .nav-switch-btn i { font-size: 1.1rem; }
             .nav-switch-btn span { display: none; } /* Hide text on mobile icons */
         }
 
@@ -188,7 +197,7 @@
                 <i class="fa-solid fa-layer-group"></i> <span class="hidden sm:inline">Smart IS</span>
             </div>
             
-            <div class="bg-slate-800 p-1 rounded-xl flex gap-1 border border-slate-700">
+            <div class="bg-slate-800 p-1 rounded-xl flex gap-2 sm:gap-1 border border-slate-700">
                 <button id="nav-metodiky" onclick="switchTab('metodiky')" class="nav-switch-btn active px-4 py-1.5 rounded-lg text-sm font-semibold text-slate-300 flex items-center gap-2">
                     <i class="fa-solid fa-book-open"></i> <span>Encyklopédia</span>
                 </button>
@@ -749,10 +758,16 @@
             filteredData.forEach(item => {
                 const c = colorMap[item.color];
                 const card = document.createElement('div');
-                card.className = `glass rounded-2xl p-6 flex flex-col items-start cursor-pointer card-hover group border border-slate-700/50`;
+                card.className = `glass rounded-2xl p-6 flex flex-col items-start cursor-pointer card-hover group border border-slate-700/50 relative overflow-hidden`;
                 card.onclick = () => openModal(item);
 
+                let accentColor = '#3b82f6';
+                if(item.color === 'emerald') accentColor = '#10b981';
+                else if(item.color === 'purple') accentColor = '#a855f7';
+                else if(item.color === 'pink') accentColor = '#f43f5e';
+
                 card.innerHTML = `
+                    <div class="card-accent" style="background-color: ${accentColor}"></div>
                     <div class="w-12 h-12 rounded-xl ${c.bg} ${c.text} flex items-center justify-center text-xl mb-4 transition-colors">
                         <i class="fa-solid ${item.icon}"></i>
                     </div>
